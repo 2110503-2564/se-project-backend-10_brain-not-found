@@ -10,28 +10,28 @@ exports.getReservations = async (req,res,next) => {
     if(req.user.role !== 'admin'){
         // console.log("admin");
         query = Reservation.find({user:req.user.id}).populate({
-            path: 'massageshop',
+            path: 'shop',
             select: 'name province tel'
         });
     } else { //If you are an admin, you can see all!
         // console.log("else");
-        if (req.params.massageshopId){
-            // console.log("hello" + req.params.massageshopId);
-            query = Reservation.find({ massageshop: req.params.massageshopId }).populate({
-                path: 'massageshop',
+        if (req.params.shopId){
+            // console.log("hello" + req.params.shopId);
+            query = Reservation.find({ shop: req.params.shopId }).populate({
+                path: 'shop',
                 select: 'name province tel'
             });
         } else { 
             // console.log("Hello");
             query = Reservation.find().populate({
-                path: 'massageshop',
+                path: 'shop',
                 select: 'name province tel'
             });
         }
     }
     // } else { // if you are an admin, you can see all!
     //     query = Reservation.find().populate({
-    //         path: 'massageshop',
+    //         path: 'shop',
     //         select: 'name province tel'
     //     });
     // }
@@ -56,7 +56,7 @@ exports.getReservations = async (req,res,next) => {
 exports.getReservation = async (req,res,next) => {
     try {
         const reservation = await Reservation.findById(req.params.id).populate({
-            path: 'messageShop',
+            path: 'shop',
             select: 'name description tel'
         });
 
@@ -76,16 +76,16 @@ exports.getReservation = async (req,res,next) => {
 };
 
 //@desc Add single reservation
-//@route Post /api/v1/messageshop/:messageshopId/reservations/
+//@route Post /api/v1/shop/:shopId/reservations/
 //@access Private
 exports.addReservation = async (req,res,next) => {
     try {
-        req.body.messageshop = req.params.messageshopId;
+        req.body.shop = req.params.shopId;
 
-        const messageshop = await MessageShop.findById(req.params.messageshopId);
+        const shop = await shop.findById(req.params.shopId);
 
-        if(!messageshop){
-            return res.status(404).json({success: false, message: `NO massage Shop with the id of ${req.params.massageshopId}`});
+        if(!shop){
+            return res.status(404).json({success: false, message: `NO massage Shop with the id of ${req.params.shopId}`});
         }
 
         //add user Id to req.body
