@@ -56,7 +56,7 @@ exports.getReservations = async (req,res,next) => {
 exports.getReservation = async (req,res,next) => {
     try {
         const reservation = await Reservation.findById(req.params.id).populate({
-            path: 'messageShop',
+            path: 'Shop',
             select: 'name description tel'
         });
 
@@ -76,15 +76,15 @@ exports.getReservation = async (req,res,next) => {
 };
 
 //@desc Add single reservation
-//@route Post /api/v1/messageshop/:messageshopId/reservations/
+//@route Post /api/v1/shop/:shopId/reservations/
 //@access Private
 exports.addReservation = async (req,res,next) => {
     try {
-        req.body.messageshop = req.params.messageshopId;
+        req.body.shop = req.params.shopId;
 
-        const messageshop = await MessageShop.findById(req.params.messageshopId);
+        const shop = await Shop.findById(req.params.shopId);
 
-        if(!messageshop){
+        if(!shop){
             return res.status(404).json({success: false, message: `NO massage Shop with the id of ${req.params.massageshopId}`});
         }
 
