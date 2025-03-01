@@ -3,8 +3,8 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
 //Route files
-const hospitals =require('./routes/hospitals');
-const appointments = require('./routes/appointments');
+const hospitals =require('./routes/massageShops');
+const appointments = require('./routes/reservations');
 const mongoSanitize=require('express-mongo-sanitize');
 const helmet=require('helmet');
 const {xss}=require('express-xss-sanitizer');
@@ -28,7 +28,7 @@ const swaggerOptions={
         info: {
             title: 'Library API',
             version: '1.0.0',
-            description: 'A simple Express VacQ API'
+            description: 'A simple Express Message Shop reservation API'
         },
         servers:[{url: 'http://localhost:5000/api/v1'}],
     },
@@ -59,11 +59,10 @@ app.use(cors());
 
 
 
-app.use('/api/v1/hospitals',hospitals);
+app.use('/api/v1/massageShpos',massageShops);
 app.use('/api/v1/auth',auth);
 
-app.use('/api/v1/appointments',appointments);
-
+app.use('/api/v1/reservaions',reservations);
 
 // การสั่ง run server
 const PORT = process.env.PORT || 5000; // ถ้า env ลืม set PORT ให้ใช้ 5000 แทน
