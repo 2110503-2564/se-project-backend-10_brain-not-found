@@ -1,158 +1,158 @@
-const Appointment = require('../models/Appointment');
-const Hospital = require('../models/Hospital');
-//@desc     Get all appointments
-//@route    Get /api/v1/appointments
+const Reservation = require('../models/Reservation');
+const MassageShop = require('../models/MassageShop');
+//@desc     Get all reservations
+//@route    Get /api/v1/reservations
 //@access   Public
-exports.getAppointments = async (req,res,next) => {
+exports.getReservations = async (req,res,next) => {
     let query;
     
-    // General users can see only their appointments!
+    // General users can see only their reservations!
     if(req.user.role !== 'admin'){
         // console.log("admin");
-        query = Appointment.find({user:req.user.id}).populate({
-            path: 'hospital',
+        query = Reservation.find({user:req.user.id}).populate({
+            path: 'massageshop',
             select: 'name province tel'
         });
     } else { //If you are an admin, you can see all!
         // console.log("else");
-        if (req.params.hospitalId){
-            // console.log("hello" + req.params.hospitalId);
-            query = Appointment.find({ hospital: req.params.hospitalId }).populate({
-                path: 'hospital',
+        if (req.params.massageshopId){
+            // console.log("hello" + req.params.massageshopId);
+            query = Reservation.find({ massageshop: req.params.massageshopId }).populate({
+                path: 'massageshop',
                 select: 'name province tel'
             });
         } else { 
             // console.log("Hello");
-            query = Appointment.find().populate({
-                path: 'hospital',
+            query = Reservation.find().populate({
+                path: 'massageshop',
                 select: 'name province tel'
             });
         }
     }
     // } else { // if you are an admin, you can see all!
-    //     query = Appointment.find().populate({
-    //         path: 'hospital',
+    //     query = Reservation.find().populate({
+    //         path: 'massageshop',
     //         select: 'name province tel'
     //     });
     // }
 
     try {
-        const appointments = await query;
+        const reservations = await query;
 
         res.status(200).json({
             success: true,
-            count: appointments.length,
-            data: appointments
+            count: reservations.length,
+            data: reservations
         });
     } catch(error){
         console.log(error);
-        return res.status(500).json({success: false,message:"Cannot find Appointment"});
+        return res.status(500).json({success: false,message:"Cannot find Reservation"});
     }
 };
 
-//@desc Get single appointment
-//@route GET /api/v1/appointments/:id
+//@desc Get single reservation
+//@route GET /api/v1/reservations/:id
 //@access Public
-exports.getAppointment = async (req,res,next) => {
+exports.getReservation = async (req,res,next) => {
     try {
-        const appointment = await Appointment.findById(req.params.id).populate({
-            path: 'hospital',
+        const reservation = await Reservation.findById(req.params.id).populate({
+            path: 'messageShop',
             select: 'name description tel'
         });
 
-        if(!appointment){
-            return res.status(404).json({success:false, message:` No appointment with the id of ${req.params.id}`});
+        if(!reservation){
+            return res.status(404).json({success:false, message:` No reservation with the id of ${req.params.id}`});
         }
 
         res.status(200).json({
             success: true,
-            data: appointment
+            data: reservation
         });
 
     } catch(error) {
         console.log(error);
-        return res.status(500).json({success:false, message:"Cannot find Appointment"});
+        return res.status(500).json({success:false, message:"Cannot find Reservation"});
     }
 };
 
-//@desc Add single appointment
-//@route Post /api/v1/hospital/:hospitalId/appointments/
+//@desc Add single reservation
+//@route Post /api/v1/messageshop/:messageshopId/reservations/
 //@access Private
-exports.addAppointment = async (req,res,next) => {
+exports.addReservation = async (req,res,next) => {
     try {
-        req.body.hospital = req.params.hospitalId;
+        req.body.messageshop = req.params.messageshopId;
 
-        const hospital = await Hospital.findById(req.params.hospitalId);
+        const messageshop = await MessageShop.findById(req.params.messageshopId);
 
-        if(!hospital){
-            return res.status(404).json({success: false, message: `NO hospital with the id of ${req.params.hospitalId}`});
+        if(!messageshop){
+            return res.status(404).json({success: false, message: `NO massage Shop with the id of ${req.params.massageshopId}`});
         }
 
         //add user Id to req.body
         req.body.user = req.user.id;
-        //Check for existed appointment
-        const existedAppointments = await Appointment.find({user:req.user.id});
-        //If the user is not an admin, they can only create 3 appointment.
-        if(existedAppointments.length >= 3 && req.user.role !== 'admin'){
-            return res.status(400).json({success:false,message:` The user with ID ${req.user.id} has already made 3 appointments`});
+        //Check for existed reservation
+        const existedReservations = await Reservation.find({user:req.user.id});
+        //If the user is not an admin, they can only create 3 reservation.
+        if(existedReservations.length >= 3 && req.user.role !== 'admin'){
+            return res.status(400).json({success:false,message:` The user with ID ${req.user.id} has already made 3 reservations`});
         }
-        const appointments = await Appointment.create(req.body);
-        res.status(200).json({success: true , data: appointments});
+        const reservations = await Reservation.create(req.body);
+        res.status(200).json({success: true , data: reservations});
 
     } catch(error) {
        console.log(error.stack);
-       return res.status(500).json({success: false, message: 'Can not create appointment'});
+       return res.status(500).json({success: false, message: 'Can not create reservation'});
     }
 };
 
-//@desc Update appointment
-//@route PUT /api/v1/appointments/:id
+//@desc Update reservation
+//@route PUT /api/v1/reservations/:id
 //@access Private
-exports.updateAppointment = async (req,res,next) => {
+exports.updateReservation = async (req,res,next) => {
     try{
-        let appointment = await Appointment.findById(req.params.id);
+        let reservation = await Reservation.findById(req.params.id);
 
-        if(!appointment){
+        if(!reservation){
             return res.status(404).json({success: false, message: `No appt with id ${req.params.id}`});
         }
 
-        //Make sure user is the appointment owner
-        if(appointment.user.toString() !== req.user.id && req.user.role !== 'admin'){
-            return res.status(401).json({success:false,message:`User ${req.user.id} is not authorized to update this appointment`});
+        //Make sure user is the reservation owner
+        if(reservation.user.toString() !== req.user.id && req.user.role !== 'admin'){
+            return res.status(401).json({success:false,message:`User ${req.user.id} is not authorized to update this reservation`});
         }
 
-        appointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
+        reservation = await Reservation.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
 
-        res.status(200).json({success: true, data: appointment});
+        res.status(200).json({success: true, data: reservation});
     } catch(err){
         console.log(err.stack);
-    return res.status(500).json({success: false, message: "Cannot uodate Appointment"});
+    return res.status(500).json({success: false, message: "Cannot uodate Reservation"});
     }
 };
 
 
-//@desc Delete appointment
-//@route Delete /api/v1/appointments/:id
+//@desc Delete reservation
+//@route Delete /api/v1/reservations/:id
 //@access Private
-exports.deleteAppointment = async (req,res,next) => {
+exports.deleteReservation = async (req,res,next) => {
     try{
-        let appointment = await Appointment.findById(req.params.id);
+        let reservation = await Reservation.findById(req.params.id);
 
-        if(!appointment){
+        if(!reservation){
             return res.status(404).json({success: false, message: `No appt with id ${req.params.id}`});
         }
 
-        //Make sure user is the appointment owner
-        if(appointment.user.toString() !== req.user.id && req.user.role !== 'admin'){
-            return res.status(401).json({success:false,message:`User ${req.user.id} is not authorized to delete this appointment`});
+        //Make sure user is the reservation owner
+        if(reservation.user.toString() !== req.user.id && req.user.role !== 'admin'){
+            return res.status(401).json({success:false,message:`User ${req.user.id} is not authorized to delete this reservation`});
         }
         
-        await appointment.deleteOne();
+        await reservation.deleteOne();
 
-        res.status(200).json({success: true, data: appointment});
+        res.status(200).json({success: true, data: reservation});
     } catch(err){
         console.log(err.stack);
-        return res.status(500).json({success: false, message: "Cannot delete Appointment"});
+        return res.status(500).json({success: false, message: "Cannot delete Reservation"});
     }
 
 };
