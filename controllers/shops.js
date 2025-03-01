@@ -1,4 +1,4 @@
-const Hospital = require('../models/Shop')
+const Shop = require('../models/Shop.js')
 const Reservation = require('../models/Reservation.js')
 //@desc Get all shops
 //@route GET /api/v1/shops
@@ -53,7 +53,7 @@ exports.getShops = async (req,res,next) => {
         // const hospitals = await Hospital.find(req.query);
         
         // Execute query
-        const hospitals = await query;
+        const shops = await query;
 
         // Pageination result
         const pagination = {};
