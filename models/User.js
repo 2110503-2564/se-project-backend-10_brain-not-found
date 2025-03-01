@@ -30,9 +30,9 @@ const UserSchema=new mongoose.Schema({
     tel: {
         type: String,
         required: [true, 'Please add a phone number'],
-        unique: true, // ถ้าหมายเลขโทรศัพท์ต้องไม่ซ้ำกัน
+        unique: true,
         match: [
-            /^[0-9]{10}$/, 
+            /^(\d{3}-?\d{3}-?\d{4})$/, 
             'Please add a valid phone number'
         ]
     },
