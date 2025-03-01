@@ -27,6 +27,15 @@ const UserSchema=new mongoose.Schema({
         minlength: 6,
         select: false
     },
+    tel: {
+        type: String,
+        required: [true, 'Please add a phone number'],
+        unique: true, // ถ้าหมายเลขโทรศัพท์ต้องไม่ซ้ำกัน
+        match: [
+            /^[0-9]{10}$/, 
+            'Please add a valid phone number'
+        ]
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     createdAt:{
