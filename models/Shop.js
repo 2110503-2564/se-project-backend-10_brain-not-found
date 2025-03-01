@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const MassageShopSchema = new mongoose.Schema({
+const ShopSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true,'Please add a name'],
@@ -37,11 +37,11 @@ const MassageShopSchema = new mongoose.Schema({
 });
 
 // Reverse populate with virtuals
-MassageShopSchema.virtual('reservations' , {
+ShopSchema.virtual('reservations' , {
     ref: 'Reservation',
     localField: '_id',
     foreignField: 'massageShop',
     justOne:false
 });
 
-module.exports=mongoose.model('MassageShop',MassageShopSchema);
+module.exports=mongoose.model('MassageShop',ShopSchema);
