@@ -3,9 +3,8 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
 //Route files
-
-const messageshops =require('./routes/massageshops');
-const appointments = require('./routes/reservations');
+const shop =require('./routes/shops');
+const reservations = require('./routes/reservations');
 const mongoSanitize=require('express-mongo-sanitize');
 const helmet=require('helmet');
 const {xss}=require('express-xss-sanitizer');
@@ -60,9 +59,9 @@ app.use(cors());
 
 
 
+
 app.use('/api/v1/shops',shops);
 app.use('/api/v1/auth',auth);
-
 app.use('/api/v1/reservaions',reservations);
 
 // การสั่ง run server
