@@ -97,7 +97,6 @@ exports.getHospital = async (req,res,next) => {
     }
 };
 
-
 //@desc Create new hospital
 //@route POST /api/v1/hospitals
 //@access Private
