@@ -53,7 +53,7 @@ exports.getShops = async (req,res,next) => {
         // const hospitals = await Hospital.find(req.query);
         
         // Execute query
-        const hospitals = await query;
+        const shops = await query;
 
         // Pageination result
         const pagination = {};

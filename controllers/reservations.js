@@ -1,5 +1,5 @@
 const Reservation = require('../models/Reservation');
-const MassageShop = require('../models/Shop');
+const Shop = require('../models/Shop');
 //@desc     Get all reservations
 //@route    Get /api/v1/reservations
 //@access   Public
@@ -10,21 +10,21 @@ exports.getReservations = async (req,res,next) => {
     if(req.user.role !== 'admin'){
         // console.log("admin");
         query = Reservation.find({user:req.user.id}).populate({
-            path: 'massageshop',
+            path: 'shop',
             select: 'name province tel'
         });
     } else { //If you are an admin, you can see all!
         // console.log("else");
-        if (req.params.massageshopId){
+        if (req.params.shopId){
             // console.log("hello" + req.params.massageshopId);
-            query = Reservation.find({ massageshop: req.params.massageshopId }).populate({
-                path: 'massageshop',
+            query = Reservation.find({ shop: req.params.shopId }).populate({
+                path: 'shop',
                 select: 'name province tel'
             });
         } else { 
             // console.log("Hello");
             query = Reservation.find().populate({
-                path: 'massageshop',
+                path: 'shop',
                 select: 'name province tel'
             });
         }
@@ -126,7 +126,7 @@ exports.updateReservation = async (req,res,next) => {
         res.status(200).json({success: true, data: reservation});
     } catch(err){
         console.log(err.stack);
-    return res.status(500).json({success: false, message: "Cannot uodate Reservation"});
+    return res.status(500).json({success: false, message: "Cannot update Reservation"});
     }
 };
 

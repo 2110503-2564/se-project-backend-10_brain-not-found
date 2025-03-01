@@ -57,12 +57,9 @@ app.use(hpp());
 //Enable CORS
 app.use(cors());
 
-
-
-
 app.use('/api/v1/shops',shop);
 app.use('/api/v1/auth',auth);
-app.use('/api/v1/reservaions',reservations);
+app.use('/api/v1/reservations',reservations);
 
 // การสั่ง run server
 const PORT = process.env.PORT || 5000; // ถ้า env ลืม set PORT ให้ใช้ 5000 แทน
