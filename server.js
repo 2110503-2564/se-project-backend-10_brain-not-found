@@ -3,7 +3,8 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
 //Route files
-const hospitals =require('./routes/Shops');
+
+const messageshops =require('./routes/massageshops');
 const appointments = require('./routes/reservations');
 const mongoSanitize=require('express-mongo-sanitize');
 const helmet=require('helmet');
