@@ -60,7 +60,7 @@ app.use(cors());
 
 
 
-app.use('/api/v1/shops',shops);
+app.use('/api/v1/shops',shop);
 app.use('/api/v1/auth',auth);
 app.use('/api/v1/reservaions',reservations);
 

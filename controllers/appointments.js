@@ -1,5 +1,5 @@
 const Reservation = require('../models/Reservation');
-const MassageShop = require('../models/MassageShop');
+const MassageShop = require('../models/Shop');
 //@desc     Get all reservations
 //@route    Get /api/v1/reservations
 //@access   Public
