@@ -56,7 +56,7 @@ const ShopSchema = new mongoose.Schema({
 ShopSchema.virtual('reservations' , {
     ref: 'Reservation',
     localField: '_id',
-    foreignField: 'massageShop',
+    foreignField: 'shop',
     justOne:false
 });
 

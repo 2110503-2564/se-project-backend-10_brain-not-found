@@ -1,4 +1,4 @@
-const Shop = require('../models/Shop')
+const Shop = require('../models/Shop.js')
 const Reservation = require('../models/Reservation.js')
 //@desc Get all shops
 //@route GET /api/v1/shops
@@ -74,10 +74,9 @@ exports.getShops = async (req,res,next) => {
         // console.log("hello");
         res.status(200).json({success:true, count:shops.length, data:shops});
     } catch(err){
-        res.status(400).json({succes: false, message:"5555"});
+        res.status(400).json({succes: false, message:"Cannot find Shop"});
     }
 };
-
 
 //@desc Get single shop
 //@route GET /api/v1/shops/:id
@@ -96,7 +95,6 @@ exports.getShop = async (req,res,next) => {
         res.status(400).json({success:false});
     }
 };
-
 
 //@desc Create new shop
 //@route POST /api/v1/shops
