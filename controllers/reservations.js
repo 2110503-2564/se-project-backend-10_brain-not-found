@@ -126,7 +126,7 @@ exports.updateReservation = async (req,res,next) => {
         res.status(200).json({success: true, data: reservation});
     } catch(err){
         console.log(err.stack);
-    return res.status(500).json({success: false, message: "Cannot uodate Reservation"});
+        return res.status(500).json({success: false, message: "Cannot update Reservation"});
     }
 };
 
