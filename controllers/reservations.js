@@ -14,27 +14,23 @@ exports.getReservations = async (req,res,next) => {
             path: 'shop',
             select: 'name province tel openTime closeTime'
         });
-    } else { //If you are an admin, you can see all!
-        // console.log("else");
+    } else { 
+        
         if (req.params.shopId){
+
             query = Reservation.find({ shop: req.params.shopId }).populate({
                 path: 'shop',
                 select: 'name province tel openTime closeTime'
             });
         } else { 
-            // console.log("Hello");
+           
             query = Reservation.find().populate({
                 path: 'shop',
                 select: 'name province tel openTime closeTime'
             });
         }
     }
-    // } else { // if you are an admin, you can see all!
-    //     query = Reservation.find().populate({
-    //         path: 'massageshop',
-    //         select: 'name province tel'
-    //     });
-    // }
+
 
     try {
         const reservations = await query;
@@ -87,7 +83,6 @@ exports.addReservation = async (req,res,next) => {
         if(!shop){
             return res.status(404).json({success: false, message: `NO massage Shop with the id of ${req.params.shopId}`});
         }
-
         //add user Id to req.body
         req.body.user = req.user.id;
         //Check for existed reservation

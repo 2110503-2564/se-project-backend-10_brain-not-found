@@ -143,7 +143,7 @@ exports.deleteShop = async (req,res,next) => {
         }
 
         await Reservation.deleteMany({shop: req.params.id});
-        await Shop.deleteOne({_id: req.params.id});
+        // await Shop.deleteOne({_id: req.params.id});
         res.status(200).json({success:true,data:shop});
     } catch{
         res.status(400).json({success:false});

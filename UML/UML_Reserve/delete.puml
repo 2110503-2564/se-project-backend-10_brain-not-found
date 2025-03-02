@@ -1,0 +1,24 @@
+@startuml Manage Reservation (DELETE)
+
+header Sample VacQ Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Reservation (DELETE)"
+
+participant "Client" as client
+participant "<<JavaScript>>\n:server" as server
+participant "<<router>>\n:reservations" as routerReservations
+participant "<<controllers>>\n:reservations" as controllersReservations
+participant "<<model>>\n:Reservation" as modelReservation
+database "<<MongoDB>>\n:reservations" as ReservationsDatabase
+
+client -> server ++ : req.delete('/api/v1/reservations/:id', reservationData)
+server -> routerReservations ++ : app.use('/api/v1/reservations', reservations)
+routerReservations -> controllersReservations ++ : deleteReservation
+controllersReservations -> modelReservation ++ : findByIdAndDelete(req.params.id, req.body, { new: true })
+modelReservation -> ReservationsDatabase ++ : deleteOne({ _id: id })
+modelReservation -> controllersReservations -- : result (deletion status)
+ReservationsDatabase --> modelReservation -- : result (deletion status)
+controllersReservations --> client -- : response (result)
+
+
+@enduml
