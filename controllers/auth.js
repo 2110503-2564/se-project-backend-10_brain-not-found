@@ -14,7 +14,6 @@ exports.register = async (req, res, next) => {
             tel,
             role
         });
-
         // Create token
         sendTokenResponse(user,200,res);
     } catch(err) {
