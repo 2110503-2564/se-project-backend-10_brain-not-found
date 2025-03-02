@@ -23,13 +23,29 @@ const ShopSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a postalcode'], maxlength:[5, 'Postal Code can not be more than 5 digits']
     },
-    tel:{
-        type: String
+    tel: {
+        type: String,
+        required: [true, 'Please add a phone number'],
+        unique: true,
+        match: [
+            /^(\d{3}-?\d{3}-?\d{4})$/, 
+            'Please add a valid phone number'
+        ]
     },
     region:{
         type: String,
         required: [true, 'Please add a region']
-    }, 
+    },
+    openTime: {
+        type: String,
+        required: [true, 'Please add an open time'],
+        match: [/^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/, 'Please add a valid open time in HH:MM format']
+    },
+    closeTime: {
+        type: String,
+        required: [true, 'Please add a close time'],
+        match: [/^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/, 'Please add a valid close time in HH:MM format']
+    }
 
 }, {
     toJSON: {virtuals: true},
@@ -40,7 +56,7 @@ const ShopSchema = new mongoose.Schema({
 ShopSchema.virtual('reservations' , {
     ref: 'Reservation',
     localField: '_id',
-    foreignField: 'massageShop',
+    foreignField: 'shop',
     justOne:false
 });
 
