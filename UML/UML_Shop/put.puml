@@ -1,0 +1,24 @@
+@startuml Manage Shop (PUT)
+
+header Sample VacQ Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Shop (PUT)"
+
+participant "Client" as client
+participant "<<JavaScript>>\n:server" as server
+participant "<<router>>\n:shops" as routerShops
+participant "<<controllers>>\n:shops" as controllersShops
+participant "<<model>>\n:Shop" as modelShop
+database "<<MongoDB>>\n:shops" as ShopsDatabase
+
+client -> server ++ : req.put('/api/v1/shops/:id', shopData)
+server -> routerShops ++ : app.use('/api/v1/shops', shops)
+routerShops -> controllersShops ++ : updateShop(req, res)
+controllersShops -> modelShop ++ : findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+modelShop -> ShopsDatabase ++ : findByIdAndUpdate(:id, shopData, { new: true, runValidators: true })
+ShopsDatabase --> modelShop -- : updatedShop
+modelShop --> controllersShops -- : updatedShop
+
+controllersShops --> client -- : response (updatedShop)
+
+@enduml
