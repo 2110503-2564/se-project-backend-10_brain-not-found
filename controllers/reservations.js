@@ -115,7 +115,7 @@ exports.updateReservation = async (req,res,next) => {
         if(!reservation){
             return res.status(404).json({success: false, message: `No appt with id ${req.params.id}`});
         }
-
+        
         //Make sure user is the reservation owner
         if(reservation.user.toString() !== req.user.id && req.user.role !== 'admin'){
             return res.status(401).json({success:false,message:`User ${req.user.id} is not authorized to update this reservation`});

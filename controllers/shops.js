@@ -78,7 +78,6 @@ exports.getShops = async (req,res,next) => {
     }
 };
 
-
 //@desc Get single shop
 //@route GET /api/v1/shops/:id
 //@access Public
@@ -96,7 +95,6 @@ exports.getShop = async (req,res,next) => {
         res.status(400).json({success:false});
     }
 };
-
 
 //@desc Create new shop
 //@route POST /api/v1/shops
