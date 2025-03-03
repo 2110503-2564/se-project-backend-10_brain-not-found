@@ -1,4 +1,4 @@
-@startuml Manage Reservation (POST)
+@startuml Manage Authentication (POST)
 
 footer Page %page% of %lastpage%
 title "Manage Authentication (POST)"
@@ -14,9 +14,9 @@ client -> server ++ : req.post('/api/v1/auth')
 server -> routerAuth ++ : app.use('/api/v1/auth', auth)
 routerAuth -> controllersAuth ++ : register
 controllersAuth -> User ++ : createUser
-User -> MongoDB ++ : UserSchema
-MongoDB --> User -- : success/failure
-User --> controllersAuth -- : new user data/error
-controllersAuth --> client -- : response (auth)
+User -> MongoDB ++ : UserSchea
+MongoDB -->> User : success / failure
+User -->> controllersAuth : new user data / error
+controllersAuth -->> client : response (JWT token / error)
 
 @enduml
