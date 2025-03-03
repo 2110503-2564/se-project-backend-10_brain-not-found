@@ -1,0 +1,23 @@
+@startuml Manage Reservation (GET)
+
+footer Page %page% of %lastpage%
+title "Manage Reservation (GET)"
+
+participant "Client" as client
+participant "<<JavaScript>>\n:server" as server
+participant "<<router>>\n:reservations" as routerReservations
+participant "<<controllers>>\n:reservations" as controllersReservations
+participant "<<model>>\n:Reservation" as modelReservation
+database "<<MongoDB>>\n:reservations" as ReservationsDatabase
+
+client -> server ++ : req.get('/api/v1/reservations/')
+server -> routerReservations ++ : app.use('/api/v1/reservations/:id', reservations)
+routerReservations -> controllersReservations ++ : getReservation
+controllersReservations -> modelReservation ++ : findById(req.params.id)
+modelReservation -> ReservationsDatabase ++ : findById(:id)
+ReservationsDatabase --> modelReservation -- : reservation
+controllersReservations <-- modelReservation --:reservation
+controllersReservations --> client -- : response (reservation)
+
+@enduml
+

@@ -78,7 +78,6 @@ exports.getShops = async (req,res,next) => {
     }
 };
 
-
 //@desc Get single shop
 //@route GET /api/v1/shops/:id
 //@access Public
@@ -96,7 +95,6 @@ exports.getShop = async (req,res,next) => {
         res.status(400).json({success:false});
     }
 };
-
 
 //@desc Create new shop
 //@route POST /api/v1/shops
@@ -145,7 +143,7 @@ exports.deleteShop = async (req,res,next) => {
         }
 
         await Reservation.deleteMany({shop: req.params.id});
-        await Shop.deleteOne({_id: req.params.id});
+        // await Shop.deleteOne({_id: req.params.id});
         res.status(200).json({success:true,data:shop});
     } catch{
         res.status(400).json({success:false});

@@ -1,0 +1,55 @@
+@startuml Massage Use Case DiagramBorderColor
+left to right direction
+actor "Customer" as customer
+actor "Admin" as admin
+actor "Guest" as guest
+
+folder "Authentication System" as Asystem{
+    usecase "Register" as Reg
+    usecase "Login" as login
+    usecase "Logout" as logout
+}
+folder "Shop System" as Shop{
+    usecase "View Shop Lists" as viewShopLists
+    rectangle "Manage Shop" as manageshop{
+        usecase "Create Shop" as createshop
+        usecase "Update Shop" as updateshop
+        usecase "Delete Shop" as deleteshop
+    }
+}
+folder "Reservation System" as Rsystem{
+    usecase "View All Reservations" as viewAllReservations
+    usecase "View My Reservations" as viewMyReservations
+    rectangle "Manage Reservation" as manageReservation{
+        usecase "Create Reservation" as createReservation
+        usecase "Update Reservation" as updateReservation
+        usecase "Cancel Reservation" as cancelReservation
+    }
+}
+
+guest -- login
+guest -- Reg
+guest -- viewShopLists
+guest -- viewShopDetails
+
+customer -- login  
+customer -- logout
+customer -- viewShopLists
+customer -- viewMyReservations
+customer -- createReservation
+customer -- updateReservation
+customer -- cancelReservation
+
+login -- admin
+logout -- admin
+createshop -- admin
+updateshop -- admin
+deleteshop -- admin
+viewShopLists -- admin
+viewAllReservations -- admin
+viewMyReservations -- admin
+createReservation -- admin
+updateReservation -- admin
+cancelReservation -- admin
+
+@enduml
