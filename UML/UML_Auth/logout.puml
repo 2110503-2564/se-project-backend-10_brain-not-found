@@ -1,6 +1,5 @@
 @startuml Manage Authentication (GET)
 
-footer Page %page% of %lastpage%
 title "User Logout (GET /api/v1/auth/logout)"
 
 participant "Client" as client
@@ -12,6 +11,6 @@ client -> server ++ : req.get('/api/v1/auth/logout')
 server -> routerAuth ++ : app.use('/api/v1/auth', auth)
 routerAuth -> controllersAuth ++ : logout
 controllersAuth -> controllersAuth : clear cookie (token='none', expires in 10s)
-controllersAuth --> client -- : 200 OK (success, empty data)
+controllersAuth --> client -- : success, empty data
 
 @enduml

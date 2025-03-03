@@ -1,35 +1,25 @@
-@startuml Manage Authentication (POST)
+@startuml "Manage Authentication (PUT)"
 
-footer Page %page% of %lastpage%
-title "User Login (POST)"
-
+title "User Login (GET /api/v1/auth/login)"
 participant "Client" as client
 participant "<<JavaScript>>\n:server" as server
 participant "<<router>>\n:auth" as routerAuth
 participant "<<controllers>>\n:auth" as controllersAuth
-participant "<<models>>\n:User" as modelUser
+participant "<<models>>\n:User (Mongoose)" as modelUser
 database "<<MongoDB>>\n:users" as UsersDatabase
 
-client -> server ++ : req.post('/api/v1/auth/login')
-server -> routerAuth ++ : app.use('/api/v1/auth', auth)
-routerAuth -> controllersAuth ++ : login
-controllersAuth -> modelUser ++ : findOne({ email }).select('+password')
-modelUser -> UsersDatabase ++ : query(UserSchema)
-UsersDatabase -->> modelUser : user data / null
-modelUser -->> controllersAuth : user data / error
+client -> server : POST /api/v1/auth/login
+server -> routerAuth : app.use('/api/v1/auth', auth)
+routerAuth -> controllersAuth : login
 
-alt User Not Found
-    controllersAuth --> client -- : 400 Bad Request (Invalid credentials)
-else User Found
-    controllersAuth -> modelUser ++ : matchPassword(password)
-    modelUser -->> controllersAuth : true / false
-    
-    alt Password Incorrect
-        controllersAuth --> client -- : 401 Unauthorized (Invalid credentials)
-    else Password Correct
-        controllersAuth -> controllersAuth : generate JWT token (sendTokenResponse)
-        controllersAuth --> client -- : response (JWT token)
-    end
-end
+controllersAuth -> modelUser : findOne({ email }).select('+password')
+modelUser -> UsersDatabase : findOne({ email })
+UsersDatabase --> modelUser : Return user document
+
+controllersAuth -> modelUser : user.matchPassword(password)
+modelUser --> controllersAuth : Return true/false
+
+controllersAuth -> controllersAuth : sendTokenResponse(user, 200, res)
+controllersAuth -> client : JSON { succes, token }
 
 @enduml
