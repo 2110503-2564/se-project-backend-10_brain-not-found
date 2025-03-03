@@ -1,0 +1,37 @@
+@startuml Class Diagram
+left to right direction
+
+class User {
+-id : ObjectID
+-username : string
+-email : string
+-role : string
+-tel : string
+-password : string
+}
+
+class Reservation {
+-id : ObjectID
+-userId : ObjectID
+-shopId : ObjectID
+-reservationDate : Date
+-CreateAt : Date
+}
+
+class Shop {
+-id : ObjectID
+-name : string
+-address : string
+-district : string
+-province : string
+-postalcode : string
+-region : string
+-tel : string
+-openTime : string
+-closeTime : string
+}
+
+User "1" -- "*" Reservation : booking
+Reservation "*" -- "1" Shop : has
+
+@enduml
