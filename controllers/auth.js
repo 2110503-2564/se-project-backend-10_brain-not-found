@@ -14,8 +14,8 @@ exports.register = async (req, res, next) => {
             tel,
             role
         });
-        // Create token
-        sendTokenResponse(user,200,res);
+  
+        sendTokenResponse(user,200,res);      // Create token
     } catch(err) {
         res.status(400).json({success:false,message:"bad req"});
         console.log(err);
