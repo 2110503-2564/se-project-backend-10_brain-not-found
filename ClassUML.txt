@@ -1,0 +1,60 @@
+
+
+@startuml
+class AuthController {
+    +register(req, res, next)
+    +login(req, res, next)
+    +getMe(req, res, next)
+    +logout(req, res, next)
+}
+
+class ReservationController {
+    +getReservations(req, res, next)
+    +getReservation(req, res, next)
+    +addReservation(req, res, next)
+    +updateReservation(req, res, next)
+    +deleteReservation(req, res, next)
+}
+
+class ShopController {
+    +getShops(req, res, next)
+    +getShop(req, res, next)
+    +createShop(req, res, next)
+    +updateShop(req, res, next)
+    +deleteShop(req, res, next)
+}
+
+class AuthMiddleware {
+    +protect(req, res, next)
+    +authorize(...roles)
+}
+
+class User {
+    -id : int
+    -username : string
+    -email : string
+    -role : string
+    -password : string
+}
+
+class Reservation {
+    -id : int
+    -userId : int
+    -shopId : int
+    -date : date
+    -time : time
+    -status : string
+}
+
+class Shop {
+    -id : int
+    -name : string
+    -address : string
+    -contact : string
+}
+
+AuthController -- User
+ReservationController -- Reservation
+ShopController -- Shop
+AuthMiddleware -- User
+@enduml
