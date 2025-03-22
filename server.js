@@ -12,7 +12,6 @@ const auth = require('./routes/auth');
 const rateLimit=require('express-rate-limit');
 const hpp=require('hpp');
 const cors=require('cors');
-connectDB();
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 // การสั่ง run server
@@ -20,6 +19,7 @@ const PORT = process.env.PORT || 5000; // ถ้า env ลืม set PORT ใ�
 //Load env vars
 dotenv.config({path:'./config/config.env'});
 //Connect to database
+connectDB();
 
 
 const app = express();
@@ -66,7 +66,7 @@ app.use('/api/v1/reservations',reservations);
 
 const server = app.listen(
     PORT, 
-    console.log('Server running in ', process.env.NODE_ENV, ' on' + process.env.HOST + ":" + PORT
+    console.log('Server running in ', process.env.NODE_ENV, ' on ' + process.env.HOST + ":" + PORT
 ));
 
 //Handle unhandled promise rejections 
