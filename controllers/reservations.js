@@ -98,14 +98,12 @@ exports.addReservation = async (req,res,next) => {
             return res.status(400).json({success:false,message:` The user with ID ${req.user.id} has already made 3 reservations`});
         }
 
-        const reservationMoment = moment(req.body.reservationDate, 'YYYY-MM-DD HH:mm');
-
-        if (!reservationMoment.isValid()) {
-            return res.status(400).json({ success: false, message: 'Invalid reservationDate format.' });
-        }
-
-
         if (req.body.reservationDate) {
+            const reservationMoment = moment(req.body.reservationDate, 'YYYY-MM-DD HH:mm');
+
+            if (!reservationMoment.isValid()) {
+                return res.status(400).json({ success: false, message: 'Invalid reservationDate format.' });
+            }
             const openShopTime = moment(shop.openTime, 'HH:mm');
             const closeShopTime = moment(shop.closeTime, 'HH:mm');
 
@@ -125,6 +123,7 @@ exports.addReservation = async (req,res,next) => {
                     });
                 }
             } else {
+                // 21.00 - 3.00
                 // openTime > closeTime (ช่วงเวลาข้ามเที่ยงคืน)
                 if (reservationTime.isSameOrAfter(openShopTime) || reservationTime.isSameOrBefore(closeShopTime)) {
                     console.log('reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน (ข้ามเที่ยงคืน)');
@@ -164,14 +163,15 @@ exports.updateReservation = async (req,res,next) => {
         let shop = await Shop.findById(reservation.shop);
 
         if (req.body.reservationDate) {
-            const openShopTime = moment(shop.openTime, 'HH:mm');
-            const closeShopTime = moment(shop.closeTime, 'HH:mm');
 
-            const reservationMoment = moment(req.body.reservationDate, 'YYYY-MM-DD HH:mm');
+            const reservationMoment = moment(req.body.reservationDate, 'YYYY-MM-DD HH:mm',true);
 
             if (!reservationMoment.isValid()) {
                 return res.status(400).json({ success: false, message: 'Invalid reservationDate format.' });
             }
+
+            const openShopTime = moment(shop.openTime, 'HH:mm');
+            const closeShopTime = moment(shop.closeTime, 'HH:mm');
 
             const reservationTime = moment(reservationMoment.format('HH:mm'), 'HH:mm');
             if (openShopTime.isSameOrBefore(closeShopTime)) {
