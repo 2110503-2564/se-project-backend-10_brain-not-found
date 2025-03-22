@@ -15,7 +15,8 @@ const cors=require('cors');
 
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
-
+// การสั่ง run server
+const PORT = process.env.PORT || 5000; // ถ้า env ลืม set PORT ให้ใช้ 5000 แทน
 //Load env vars
 dotenv.config({path:'./config/config.env'});
 //Connect to database
@@ -30,7 +31,9 @@ const swaggerOptions={
             version: '1.0.0',
             description: 'A simple Express Message Shop reservation API'
         },
-        servers:[{url: process.env.HOST + ":" + PORT + 'api/v1'}],
+        servers:[{
+            url: process.env.HOST + ":" + PORT + '/api/v1'
+        }],
     },
     apis:['./routes/*.js'],
 };
@@ -60,9 +63,6 @@ app.use(cors());
 app.use('/api/v1/shops',shop);
 app.use('/api/v1/auth',auth);
 app.use('/api/v1/reservations',reservations);
-
-// การสั่ง run server
-const PORT = process.env.PORT || 5000; // ถ้า env ลืม set PORT ให้ใช้ 5000 แทน
 
 const server = app.listen(
     PORT, 

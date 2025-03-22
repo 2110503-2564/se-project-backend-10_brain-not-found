@@ -1,6 +1,6 @@
 {  
     "version": 2, 
-    "name": "car-rental", 
+    "name": "message-shop", 
     "builds": [{ 
         "src": "server.js", 
         "use": "@vercel/node" 
