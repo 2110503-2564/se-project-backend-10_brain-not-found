@@ -30,7 +30,7 @@ const swaggerOptions={
             version: '1.0.0',
             description: 'A simple Express Message Shop reservation API'
         },
-        servers:[{url: 'http://localhost:5000/api/v1'}],
+        servers:[{url: process.env.HOST + ":" + PORT + 'api/v1'}],
     },
     apis:['./routes/*.js'],
 };
@@ -64,7 +64,10 @@ app.use('/api/v1/reservations',reservations);
 // การสั่ง run server
 const PORT = process.env.PORT || 5000; // ถ้า env ลืม set PORT ให้ใช้ 5000 แทน
 
-const server = app.listen(PORT, console.log('Server running in ', process.env.NODE_ENV, ' mode onport PORT'));
+const server = app.listen(
+    PORT, 
+    console.log('Server running in ', process.env.NODE_ENV, ' on' + process.env.HOST + ":" + PORT
+));
 
 //Handle unhandled promise rejections 
 process.on('unhandledRejection' , (err,promise) => {
