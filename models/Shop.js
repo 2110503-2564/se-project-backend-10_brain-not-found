@@ -45,8 +45,7 @@ const ShopSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a close time\n'],
         match: [/^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/, 'Please add a valid close time in HH:MM format\n']
-    }
-
+    },
 }, {
     toJSON: {virtuals: true},
     toObject: {virtuals: true}
