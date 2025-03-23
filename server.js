@@ -75,3 +75,9 @@ process.on('unhandledRejection' , (err,promise) => {
     // Close server & exit process
     server.close(() => process.exit(1));
 });
+
+app.use(cors({
+    origin: "http://localhost:3000", // อนุญาตเฉพาะ frontend ที่รันบน localhost:3000
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization"
+}));
