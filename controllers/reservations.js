@@ -77,6 +77,11 @@ exports.getReservation = async (req,res,next) => {
     }
 };
 
+//@desc Add single reservation
+//@route Post /api/v1/shop/:shopId/reservations/
+//@access Private
+const momentTz = require('moment-timezone');
+
 exports.addReservation = async (req,res,next) => {
     try {
         req.body.shop = req.params.shopId;
@@ -96,7 +101,7 @@ exports.addReservation = async (req,res,next) => {
         }
 
         if (req.body.reservationDate) {
-            const reservationMomentUTC = moment.utc(req.body.reservationDate); // Treat incoming date as UTC
+            const reservationMomentUTC = momentTz.utc(req.body.reservationDate);
 
             if (!reservationMomentUTC.isValid()) {
                 return res.status(400).json({ success: false, message: 'Invalid reservationDate format.' });
@@ -105,18 +110,11 @@ exports.addReservation = async (req,res,next) => {
             const bangkokTimeZone = 'Asia/Bangkok';
             const openShopTimeBangkok = momentTz.tz(shop.openTime, 'HH:mm', bangkokTimeZone);
             const closeShopTimeBangkok = momentTz.tz(shop.closeTime, 'HH:mm', bangkokTimeZone);
-
-            // Convert the reservation time to Bangkok time for comparison
             const reservationTimeBangkok = momentTz.tz(reservationMomentUTC, bangkokTimeZone);
 
-            const openShopTimeMomentBangkok = moment(openShopTimeBangkok.format('HH:mm'), 'HH:mm');
-            const closeShopTimeMomentBangkok = moment(closeShopTimeBangkok.format('HH:mm'), 'HH:mm');
-            const reservationTimeMomentOnlyBangkok = moment(reservationTimeBangkok.format('HH:mm'), 'HH:mm');
-
-
-            if (openShopTimeMomentBangkok.isSameOrBefore(closeShopTimeMomentBangkok)) {
+            if (openShopTimeBangkok.isSameOrBefore(closeShopTimeBangkok)) {
                 // openTime <= closeTime (ช่วงเวลาปกติ)
-                if (reservationTimeMomentOnlyBangkok.isBetween(openShopTimeMomentBangkok, closeShopTimeMomentBangkok, null, '')) {
+                if (reservationTimeBangkok.isSameOrAfter(openShopTimeBangkok) && reservationTimeBangkok.isBefore(closeShopTimeBangkok)) {
                     // reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน
                     console.log('reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน');
                 } else {
@@ -128,7 +126,12 @@ exports.addReservation = async (req,res,next) => {
                 }
             } else {
                 // openTime > closeTime (ช่วงเวลาข้ามเที่ยงคืน)
-                if (reservationTimeMomentOnlyBangkok.isSameOrAfter(openShopTimeMomentBangkok) || reservationTimeMomentOnlyBangkok.isSameOrBefore(closeShopTimeMomentBangkok)) {
+                // This logic needs careful consideration for time zones
+                const startOfDayBangkok = momentTz.tz(reservationMomentUTC, bangkokTimeZone).startOf('day');
+                const openShopDateTimeBangkok = startOfDayBangkok.clone().hour(openShopTimeBangkok.hour()).minute(openShopTimeBangkok.minute()).second(openShopTimeBangkok.second());
+                const closeShopDateTimeBangkok = startOfDayBangkok.clone().hour(closeShopTimeBangkok.hour()).minute(closeShopTimeBangkok.minute()).second(closeShopTimeBangkok.second()).add(1, 'day'); // Assuming close is on the next day
+
+                if (reservationTimeBangkok.isSameOrAfter(openShopDateTimeBangkok) || reservationTimeBangkok.isBefore(closeShopDateTimeBangkok)) {
                     console.log('reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน (ข้ามเที่ยงคืน)');
                 } else {
                     return res.status(400).json({
