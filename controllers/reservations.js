@@ -112,32 +112,26 @@ exports.addReservation = async (req,res,next) => {
             const closeShopTimeBangkok = momentTz.tz(shop.closeTime, 'HH:mm', bangkokTimeZone);
             const reservationTimeBangkok = momentTz.tz(reservationMomentUTC, bangkokTimeZone);
 
-            if (openShopTimeBangkok.isSameOrBefore(closeShopTimeBangkok)) {
-                // openTime <= closeTime (ช่วงเวลาปกติ)
-                if (reservationTimeBangkok.isSameOrAfter(openShopTimeBangkok) && reservationTimeBangkok.isBefore(closeShopTimeBangkok)) {
-                    // reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน
-                    console.log('reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน');
+            // Set the date part of open and close times to be the same as reservation date for accurate comparison
+            const reservationDateOnlyBangkok = reservationTimeBangkok.clone().startOf('day');
+            const openShopDateTimeBangkok = reservationDateOnlyBangkok.clone().hour(openShopTimeBangkok.hour()).minute(openShopTimeBangkok.minute()).second(0).millisecond(0);
+            const closeShopDateTimeBangkok = reservationDateOnlyBangkok.clone().hour(closeShopTimeBangkok.hour()).minute(closeShopTimeBangkok.minute()).second(0).millisecond(0);
+
+
+            if (openShopDateTimeBangkok.isSameOrBefore(closeShopDateTimeBangkok)) {
+                // Normal hours
+                if (reservationTimeBangkok.isSameOrAfter(openShopDateTimeBangkok) && reservationTimeBangkok.isBefore(closeShopDateTimeBangkok)) {
+                    console.log('Reservation time is within normal business hours');
                 } else {
-                    // reservationDate ไม่อยู่ในช่วงเวลาเปิดปิดร้าน
-                    return res.status(400).json({
-                        success: false,
-                        message: 'Reservation time is outside of business hours.',
-                    });
+                    return res.status(400).json({ success: false, message: 'Reservation time is outside of business hours.' });
                 }
             } else {
-                // openTime > closeTime (ช่วงเวลาข้ามเที่ยงคืน)
-                // This logic needs careful consideration for time zones
-                const startOfDayBangkok = momentTz.tz(reservationMomentUTC, bangkokTimeZone).startOf('day');
-                const openShopDateTimeBangkok = startOfDayBangkok.clone().hour(openShopTimeBangkok.hour()).minute(openShopTimeBangkok.minute()).second(openShopTimeBangkok.second());
-                const closeShopDateTimeBangkok = startOfDayBangkok.clone().hour(closeShopTimeBangkok.hour()).minute(closeShopTimeBangkok.minute()).second(closeShopTimeBangkok.second()).add(1, 'day'); // Assuming close is on the next day
-
-                if (reservationTimeBangkok.isSameOrAfter(openShopDateTimeBangkok) || reservationTimeBangkok.isBefore(closeShopDateTimeBangkok)) {
-                    console.log('reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน (ข้ามเที่ยงคืน)');
+                // Overnight hours (This part might still need adjustments based on your exact needs)
+                const nextDayCloseShopDateTimeBangkok = closeShopDateTimeBangkok.clone().add(1, 'day');
+                if (reservationTimeBangkok.isSameOrAfter(openShopDateTimeBangkok) || reservationTimeBangkok.isBefore(nextDayCloseShopDateTimeBangkok)) {
+                    console.log('Reservation time is within overnight business hours');
                 } else {
-                    return res.status(400).json({
-                        success: false,
-                        message: 'Reservation time is outside of business hours.',
-                    });
+                    return res.status(400).json({ success: false, message: 'Reservation time is outside of business hours.' });
                 }
             }
         }
