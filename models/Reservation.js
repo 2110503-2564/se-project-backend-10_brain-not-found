@@ -19,6 +19,10 @@ const ReservationSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    picture: {
+        type: String,
+        required: [true, 'Please add a picture\n']
+    }
 });
 
 module.exports = mongoose.model('Reservation',ReservationSchema);
