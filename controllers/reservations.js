@@ -80,8 +80,6 @@ exports.getReservation = async (req,res,next) => {
 //@desc Add single reservation
 //@route Post /api/v1/shop/:shopId/reservations/
 //@access Private
-const momentTz = require('moment-timezone');
-
 exports.addReservation = async (req,res,next) => {
     try {
         req.body.shop = req.params.shopId;
@@ -101,37 +99,39 @@ exports.addReservation = async (req,res,next) => {
         }
 
         if (req.body.reservationDate) {
-            const reservationMomentUTC = momentTz.utc(req.body.reservationDate);
+            const reservationMoment = moment(req.body.reservationDate, 'YYYY-MM-DD HH:mm');
 
-            if (!reservationMomentUTC.isValid()) {
+            if (!reservationMoment.isValid()) {
                 return res.status(400).json({ success: false, message: 'Invalid reservationDate format.' });
             }
-
-            const bangkokTimeZone = 'Asia/Bangkok';
-            const openShopTimeBangkok = momentTz.tz(shop.openTime, 'HH:mm', bangkokTimeZone);
-            const closeShopTimeBangkok = momentTz.tz(shop.closeTime, 'HH:mm', bangkokTimeZone);
-            const reservationTimeBangkok = momentTz.tz(reservationMomentUTC, bangkokTimeZone);
-
-            // Set the date part of open and close times to be the same as reservation date for accurate comparison
-            const reservationDateOnlyBangkok = reservationTimeBangkok.clone().startOf('day');
-            const openShopDateTimeBangkok = reservationDateOnlyBangkok.clone().hour(openShopTimeBangkok.hour()).minute(openShopTimeBangkok.minute()).second(0).millisecond(0);
-            const closeShopDateTimeBangkok = reservationDateOnlyBangkok.clone().hour(closeShopTimeBangkok.hour()).minute(closeShopTimeBangkok.minute()).second(0).millisecond(0);
+            const openShopTime = moment(shop.openTime, 'HH:mm');
+            const closeShopTime = moment(shop.closeTime, 'HH:mm');
 
 
-            if (openShopDateTimeBangkok.isSameOrBefore(closeShopDateTimeBangkok)) {
-                // Normal hours
-                if (reservationTimeBangkok.isSameOrAfter(openShopDateTimeBangkok) && reservationTimeBangkok.isBefore(closeShopDateTimeBangkok)) {
-                    console.log('Reservation time is within normal business hours');
+            const reservationTime = moment(reservationMoment.format('HH:mm'), 'HH:mm');
+            if (openShopTime.isSameOrBefore(closeShopTime)) {
+                // openTime <= closeTime (ช่วงเวลาปกติ)
+                if (reservationTime.isBetween(openShopTime, closeShopTime, null, '[]')) {
+                // reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน
+                // ... (ดำเนินการต่อ)
+                console.log('reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน');
                 } else {
-                    return res.status(400).json({ success: false, message: 'Reservation time is outside of business hours.' });
+                // reservationDate ไม่อยู่ในช่วงเวลาเปิดปิดร้าน
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Reservation time is outside of business hours.',
+                    });
                 }
             } else {
-                // Overnight hours (This part might still need adjustments based on your exact needs)
-                const nextDayCloseShopDateTimeBangkok = closeShopDateTimeBangkok.clone().add(1, 'day');
-                if (reservationTimeBangkok.isSameOrAfter(openShopDateTimeBangkok) || reservationTimeBangkok.isBefore(nextDayCloseShopDateTimeBangkok)) {
-                    console.log('Reservation time is within overnight business hours');
+                // 21.00 - 3.00
+                // openTime > closeTime (ช่วงเวลาข้ามเที่ยงคืน)
+                if (reservationTime.isSameOrAfter(openShopTime) || reservationTime.isSameOrBefore(closeShopTime)) {
+                    console.log('reservationDate อยู่ในช่วงเวลาเปิดปิดร้าน (ข้ามเที่ยงคืน)');
                 } else {
-                    return res.status(400).json({ success: false, message: 'Reservation time is outside of business hours.' });
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Reservation time is outside of business hours.',
+                    });
                 }
             }
         }
@@ -140,8 +140,8 @@ exports.addReservation = async (req,res,next) => {
         res.status(200).json({success: true , data: reservations});
 
     } catch(error) {
-        console.log(error.stack);
-        return res.status(500).json({success: false, message: 'Can not create reservation'});
+       console.log(error.stack);
+       return res.status(500).json({success: false, message: 'Can not create reservation'});
     }
 };
 
