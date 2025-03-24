@@ -18,10 +18,6 @@ const ReservationSchema = new mongoose.Schema({
     createAt: {
         type: Date,
         default: Date.now
-    },
-    picture: {
-        type: String,
-        required: [true, 'Please add a picture\n']
     }
 });
 

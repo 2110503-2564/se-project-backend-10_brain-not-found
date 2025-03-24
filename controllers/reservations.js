@@ -12,7 +12,7 @@ exports.getReservations = async (req,res,next) => {
         // console.log("admin");
         query = Reservation.find({user:req.user.id}).populate({
             path: 'shop',
-            select: 'name province tel openTime closeTime'
+            // select: 'name province tel openTime closeTime picture'
         });
     } else { 
         
@@ -20,13 +20,13 @@ exports.getReservations = async (req,res,next) => {
 
             query = Reservation.find({ shop: req.params.shopId }).populate({
                 path: 'shop',
-                select: 'name province tel openTime closeTime'
+                // select: 'name province tel openTime closeTime'
             });
         } else { 
            
             query = Reservation.find().populate({
                 path: 'shop',
-                select: 'name province tel openTime closeTime'
+                // select: 'name province tel openTime closeTime'
             });
         }
     }
