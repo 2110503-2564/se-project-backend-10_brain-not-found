@@ -10,10 +10,15 @@ const ReservationSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    userName: {
+        type: String,
+        ref: 'UserName',
+        required: true
+    },
     shop: {
         type: mongoose.Schema.ObjectId,
         ref: 'Shop',
-        require: true
+        required: true
     },
     createAt: {
         type: Date,
