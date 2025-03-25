@@ -3,24 +3,36 @@ const User = require('../models/User');
 //@route POST /api/v1/auth/register
 //@access Public
 exports.register = async (req, res, next) => {
-    try{
-        const {name,email,password,tel,role} = req.body;
+    try {
+        const { name, email, password, tel, role } = req.body;
 
-        // Create User
-        const user = await User.create({
-            name,
-            email,
-            password,
-            tel,
-            role
-        });
-  
-        sendTokenResponse(user,200,res);      // Create token
-    } catch(err) {
-        res.status(400).json({success:false,message:"bad req"});
+        if (!name) return res.status(400).json({ success: false, message: "Please add a name" });
+        if (!email) return res.status(400).json({ success: false, message: "Please add an email" });
+        if (!password) return res.status(400).json({ success: false, message: "Please add a password" });
+        if (!tel) return res.status(400).json({ success: false, message: "Please add a phone number" });
+
+        // ตรวจสอบ Email ซ้ำ
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: "Email already exists" });
+        }
+
+        // ตรวจสอบเบอร์โทรซ้ำ
+        const existingTel = await User.findOne({ tel });
+        if (existingTel) {
+            return res.status(400).json({ success: false, message: "Phone number already exists" });
+        }
+
+        // สร้าง User ใหม่
+        const user = await User.create({ name, email, password, tel, role });
+
+        sendTokenResponse(user, 200, res); // Create token
+    } catch (err) {
         console.log(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-}
+};
+
 
 
 //@desc Login user
