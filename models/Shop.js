@@ -49,6 +49,10 @@ const ShopSchema = new mongoose.Schema({
     picture: {
         type: String,
         required: [true, 'Please add a picture\n']
+    },
+    desc: {
+        type: String,
+        required: [true, 'Please add a description\n']
     }
 }, {
     toJSON: {virtuals: true},
