@@ -58,6 +58,18 @@ const ShopSchema = new mongoose.Schema({
         ],
         required: [true, 'Please add at least 1 picture\n']
     },
+    shopRating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5,
+        set: val => Math.round(val * 10) / 10  // ปัดเศษให้ละเอียดถึงทศนิยม 1 ตำแหน่ง
+    },
+    numOfReviews: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
     desc: {
         type: String,
         required: [true, 'Please add a description\n']
