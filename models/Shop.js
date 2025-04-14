@@ -47,8 +47,16 @@ const ShopSchema = new mongoose.Schema({
         match: [/^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/, 'Please add a valid close time in HH:MM format\n']
     },
     picture: {
-        type: String,
-        required: [true, 'Please add a picture\n']
+        type: [String], // เป็น array ของ string
+        validate: [
+            {
+                validator: function(arr) {
+                    return arr.length <= 5; // จำกัดไม่เกิน 5 รูป
+                },
+                message: 'You can upload up to 5 pictures only\n'
+            }
+        ],
+        required: [true, 'Please add at least 1 picture\n']
     },
     desc: {
         type: String,
