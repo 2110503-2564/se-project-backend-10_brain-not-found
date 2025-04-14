@@ -27,6 +27,7 @@ exports.getReviews = async (req,res,next) => {
             data: reviews
         });
     } catch (error) {
+        console.log(err.stack);
         return res.status(500).json({ success: false, message: 'Cannot find Review' });
     }
 }
@@ -59,28 +60,62 @@ exports.createReview = async (req,res,next) => {
         const review = await Review.create(req.body);
         res.status(200).json({success: true , data: review});
     } catch (error) {
+        console.log(err.stack);
         return res.status(500).json({success: false, message: 'Can not create review'});
     }
 }
 
 //@desc     Delete review
-//@route    Delete /api/v1/reviews/:id
+//@route    Delete /api/v1/shop/:shopId/reviews/:id
 //@access   Private
 exports.DeleteReview = async (req,res,next) => {
     try {
+        // เป็น cutomer ที่เป็นเจ้าของ review และ admin
+        let review = await Review.findById(req.params.id);
+        if(!review){
+            return res.status(404).json({success: false, message: `No review with id ${req.params.id}`});
+        }
+
+        // มีสิทธ์มั้ย
+        if(req.user.role !== 'admin' && req.user.id.toString() !== review.user){
+            return res.status(401).json({success:false,message:`User ${req.user.id} is not authorized to delete this review`});
+        }
+
+        await Review.deleteOne({_id: req.params.id});
+        res.status(200).json({
+            success: true,
+            data: reservation
+        });
 
     } catch (error) {
-        
+        console.log(err.stack);
+        return res.status(500).json({success: false, message: "Cannot delete Review"});
     }
 }
 
 //@desc     Edit review
-//@route    Update /api/v1/reviews/:id
+//@route    Update /api/v1/shop/:shopId/reviews/:id
 //@access   Private
 exports.EditReview = async (req,res,next) => {
     try {
+        // customer
+        let review = await Review.findById(req.params.id);
+        if(!review){
+            return res.status(404).json({success: false, message: `No review with id ${req.params.id}`});
+        }
+
+        if(req.user.id.toString() !== review.user){
+            return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to edit this review`});
+        }
+
+        await Review.updateOne({_id: req.params.id}, req.body);
+        res.status(200).json({
+            success: true,
+            data: review
+        });
 
     } catch (error) {
-        
+        console.log(err.stack);
+        return res.status(500).json({success: false, message: "Cannot edit Review"});
     }
 }
