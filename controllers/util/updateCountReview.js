@@ -1,5 +1,5 @@
-const Review = require('../models/Review');
-const Shop = require('../models/Shop');
+const Review = require('../../models/Review');
+const Shop = require('../../models/Shop');
 
 const updateCountReview = async (shopId) => {
     try {

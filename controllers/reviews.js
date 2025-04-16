@@ -1,8 +1,8 @@
 const Reservation = require('../models/Reservation');
 const Shop = require('../models/Shop');
 const Review = require('../models/Review');
-const updateCountReview = require('../utils/updateCountReview');
-const updateShopRating = require('../utils/updateShopRating');
+const updateCountReview = require('./util/updateCountReview');
+const updateShopRating = require('./util/updateShopRating');
 
 
 //@desc     Get all review in this shop
@@ -11,9 +11,9 @@ const updateShopRating = require('../utils/updateShopRating');
 exports.getReviews = async (req,res,next) => {
     // all user
     let query;
-    query = Review.find({ review: req.params.shopId }).populate({
-        path: 'review',
-        selecet: 'header comment rating user createdAt'
+    query = Review.find({ shop: req.params.shopId }).populate({
+        path: 'user',
+        select: 'name'
     });
 
     if(!query){
@@ -25,11 +25,10 @@ exports.getReviews = async (req,res,next) => {
         res.status(200).json({
             success: true,
             count: reviews.length,
-            from: req.user.id,
             data: reviews
         });
     } catch (error) {
-        console.log(err.stack);
+        console.log(error.stack);
         return res.status(500).json({ success: false, message: 'Cannot find Review' });
     }
 }
@@ -64,7 +63,7 @@ exports.createReview = async (req,res,next) => {
         await updateCountReview(req.params.shopId);
         res.status(200).json({success: true , data: review});
     } catch (error) {
-        console.log(err.stack);
+        console.log(error.stack);
         return res.status(500).json({success: false, message: 'Can not create review'});
     }
 }
@@ -72,7 +71,7 @@ exports.createReview = async (req,res,next) => {
 //@desc     Delete review
 //@route    Delete /api/v1/shop/:shopId/reviews/:id
 //@access   Private
-exports.DeleteReview = async (req,res,next) => {
+exports.deleteReview = async (req,res,next) => {
     try {
         // เป็น cutomer ที่เป็นเจ้าของ review และ admin
         let review = await Review.findById(req.params.id);
@@ -85,16 +84,16 @@ exports.DeleteReview = async (req,res,next) => {
             return res.status(401).json({success:false,message:`User ${req.user.id} is not authorized to delete this review`});
         }
 
-        await Review.deleteOne({_id: req.params.id});
+        await review.deleteOne();
         await updateShopRating(req.params.shopId);
         await updateCountReview(req.params.shopId);
         res.status(200).json({
             success: true,
-            data: reservation
+            data: []
         });
 
     } catch (error) {
-        console.log(err.stack);
+        console.log(error.stack);
         return res.status(500).json({success: false, message: "Cannot delete Review"});
     }
 }
@@ -102,7 +101,7 @@ exports.DeleteReview = async (req,res,next) => {
 //@desc     Edit review
 //@route    Update /api/v1/shop/:shopId/reviews/:id
 //@access   Private
-exports.EditReview = async (req,res,next) => {
+exports.editReview = async (req,res,next) => {
     try {
         // customer
         let review = await Review.findById(req.params.id);
@@ -114,15 +113,15 @@ exports.EditReview = async (req,res,next) => {
             return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to edit this review`});
         }
 
-        await Review.updateOne({_id: req.params.id}, req.body);
+        let updatedReview = await Review.findByIdAndUpdate(req.params.id, req.body, {new: true});
         await updateShopRating(req.params.shopId);
         res.status(200).json({
             success: true,
-            data: review
+            data: updatedReview
         });
 
     } catch (error) {
-        console.log(err.stack);
+        console.log(error.stack);
         return res.status(500).json({success: false, message: "Cannot edit Review"});
-    }
+    } 
 }

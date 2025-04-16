@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Review = require('./Review');
 const ShopSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -76,15 +77,34 @@ const ShopSchema = new mongoose.Schema({
     }
 }, {
     toJSON: {virtuals: true},
-    toObject: {virtuals: true}
+    toObject: {virtuals: true},
+    /* testing required */
+    virtuals: {
+        reservations: {
+            options: {
+                ref: 'Reservation',
+                localField: '_id',
+                foreignField: 'shop',
+                justOne:false
+            }
+        },
+        reviews: {
+            options: {
+                ref: 'Review',
+                localField: '_id',
+                foreignField: 'shop',
+                justOne:false
+            }
+        }
+    } 
 });
 
-// Reverse populate with virtuals
-ShopSchema.virtual('reservations' , {
+// Reverse populate with virtuals 
+/*ShopSchema.virtual('reservations' , {
     ref: 'Reservation',
     localField: '_id',
     foreignField: 'shop',
     justOne:false
-});
+}); */
 
 module.exports=mongoose.model('Shop',ShopSchema);

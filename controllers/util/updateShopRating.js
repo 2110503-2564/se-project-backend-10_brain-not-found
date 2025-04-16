@@ -1,5 +1,5 @@
-const Review = require('../models/Review');
-const Shop = require('../models/Shop');
+const Review = require('../../models/Review');
+const Shop = require('../../models/Shop');
 
 const updateShopRating = async (shopId) => {
     const result = await Review.aggregate([
