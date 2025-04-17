@@ -31,7 +31,7 @@ exports.getReviews = async (req,res,next) => {
 }
 
 //@desc     Create review
-//@route    Post /api/v1/shop/:shopId/reviews/
+//@route    Post /api/v1/shops/:shopId/reviews/
 //@access   Private
 exports.createReview = async (req,res,next) => {
     // customer who booking this shop and the book was in my booking page
@@ -64,7 +64,7 @@ exports.createReview = async (req,res,next) => {
 }
 
 //@desc     Delete review
-//@route    Delete /api/v1/shop/:shopId/reviews/:id
+//@route    Delete /api/v1/shops/:shopId/reviews/:id
 //@access   Private
 exports.deleteReview = async (req,res,next) => {
     try {
@@ -92,7 +92,7 @@ exports.deleteReview = async (req,res,next) => {
 }
 
 //@desc     Edit review
-//@route    Update /api/v1/shop/:shopId/reviews/:id
+//@route    Update /api/v1/shops/:shopId/reviews/:id
 //@access   Private
 exports.editReview = async (req,res,next) => {
     try {
