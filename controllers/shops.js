@@ -84,7 +84,7 @@ exports.getShops = async (req,res,next) => {
 //@access Public
 exports.getShop = async (req,res,next) => {
     try{
-        const shop = await Shop.findById(req.params.id).populate('reviews');
+        const shop = await Shop.findById(req.params.id).populate('reviews', 'rating');
 
         if(!shop){
             return res.status(400).json({success:false});
