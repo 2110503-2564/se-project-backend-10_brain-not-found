@@ -3,30 +3,72 @@ const Shop = require('../models/Shop');
 const Review = require('../models/Review');
 
 //@desc     Get all review in this shop
-//@route    Get /api/v1/shop/shopId:/reviews
+//@route    Get /api/v1/shops/shopId:/reviews
 //@access   Public
 exports.getReviews = async (req,res,next) => {
-    // all user
+    
     let query;
-    query = Review.find({ shop: req.params.shopId }).populate({
+    // FIelds to exclude
+    const reqQuery = {...req.query};
+    const removeFields = ['select','sort','page','limit'];
+
+    removeFields.forEach(param => delete reqQuery[param]);
+    console.log(reqQuery);
+
+    let queryStr = JSON.stringify(reqQuery);
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match=>`$${match}`);
+        
+    query = Review.find(JSON.parse(queryStr)).populate({
         path: 'user',
         select: 'name'
     });
-
-    if(!query){
-        return res.status(404).json({ success: false, message: 'Review not found' });
+    // Select & sort
+    if (req.query.select) {
+        const fields = req.query.select.split(',').join(' ');
+        query = query.select(fields);
     }
+    if (req.query.sort) {
+        const sortBy = req.query.sort.split(',').join(' ');
+        query = query.sort(sortBy);
+    } else { // Default sorts by newest
+        query = query.sort('-createdAt');
+    }
+    // Pagination
+    const page = parseInt(req.query.page,10) || 1;
+    const limit = parseInt(req.query.limit,10) || 25;
+    const startIndex = (page-1) * limit;
+    const endIndex = page * limit;
 
     try {
+        const total = await Dentist.countDocuments();
+        query = query.skip(startIndex).limit(limit);
+        const dentists = await query;
+        const pagination = {};
+
+        if (endIndex < total) {
+            pagination.next = {
+                page: page + 1,
+                limit
+            }
+        }
+        if (startIndex > 0) {
+            pagination.previous = {
+                page: page - 1,
+                limit
+            }
+        }
+
         const reviews = await query;
         res.status(200).json({
             success: true,
             count: reviews.length,
+            pagination,
             data: reviews
         });
+        
     } catch (error) {
         console.log(error.stack);
-        return res.status(500).json({ success: false, message: 'Cannot find Review' });
+        return res.status(400).json({ success: false, message: 'Cannot find Review' });
     }
 }
 
@@ -44,11 +86,11 @@ exports.createReview = async (req,res,next) => {
             return res.status(404).json({success: false, message: `NO massage Shop with the id of ${req.params.shopId}`});
         }
 
-        // for the review is invalid or the customer did not book the shop
+        
         //add user Id to req.body
         req.body.user = req.user.id;
 
-        //Check for existed reservation in customer booking with this shop
+        //Check if customer had made a reservation to the shop
         const existedReservations = await Reservation.find({user:req.user.id, shop: req.params.shopId});
         if(existedReservations.length === 0){
             return res.status(401).json({success: false, message: `Customer doesn't has any reservation in this shop`});
