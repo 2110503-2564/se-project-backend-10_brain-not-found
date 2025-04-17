@@ -1,9 +1,6 @@
 const Reservation = require('../models/Reservation');
 const Shop = require('../models/Shop');
 const Review = require('../models/Review');
-const updateCountReview = require('./util/updateCountReview');
-const updateShopRating = require('./util/updateShopRating');
-
 
 //@desc     Get all review in this shop
 //@route    Get /api/v1/shop/shopId:/reviews
@@ -59,8 +56,6 @@ exports.createReview = async (req,res,next) => {
 
 
         const review = await Review.create(req.body);
-        await updateShopRating(req.params.shopId);
-        await updateCountReview(req.params.shopId);
         res.status(200).json({success: true , data: review});
     } catch (error) {
         console.log(error.stack);
@@ -85,8 +80,6 @@ exports.deleteReview = async (req,res,next) => {
         }
 
         await review.deleteOne();
-        await updateShopRating(req.params.shopId);
-        await updateCountReview(req.params.shopId);
         res.status(200).json({
             success: true,
             data: []
@@ -114,7 +107,6 @@ exports.editReview = async (req,res,next) => {
         }
 
         let updatedReview = await Review.findByIdAndUpdate(req.params.id, req.body, {new: true});
-        await updateShopRating(req.params.shopId);
         res.status(200).json({
             success: true,
             data: updatedReview
