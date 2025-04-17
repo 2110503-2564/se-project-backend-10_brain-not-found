@@ -40,9 +40,9 @@ exports.getReviews = async (req,res,next) => {
     const endIndex = page * limit;
 
     try {
-        const total = await Dentist.countDocuments();
+        const total = await Review.countDocuments();
         query = query.skip(startIndex).limit(limit);
-        const dentists = await query;
+        const reviews = await query;
         const pagination = {};
 
         if (endIndex < total) {
@@ -58,7 +58,7 @@ exports.getReviews = async (req,res,next) => {
             }
         }
 
-        const reviews = await query;
+
         res.status(200).json({
             success: true,
             count: reviews.length,
