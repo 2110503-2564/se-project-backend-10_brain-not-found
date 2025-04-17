@@ -17,8 +17,9 @@ exports.getReviews = async (req,res,next) => {
 
     let queryStr = JSON.stringify(reqQuery);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match=>`$${match}`);
+    const queryJSON = JSON.parse(queryStr);
         
-    query = Review.find(JSON.parse(queryStr)).populate({
+    query = Review.find({shop: req.params.shopId}).find(queryJSON).populate({
         path: 'user',
         select: 'name'
     });
@@ -68,7 +69,7 @@ exports.getReviews = async (req,res,next) => {
         
     } catch (error) {
         console.log(error.stack);
-        return res.status(400).json({ success: false, message: 'Cannot find Review' });
+        return res.status(500).json({ success: false, message: 'Cannot find Review' });
     }
 }
 
@@ -117,7 +118,7 @@ exports.deleteReview = async (req,res,next) => {
         }
 
         // มีสิทธ์มั้ย
-        if(req.user.role !== 'admin' && req.user.id.toString() !== review.user){
+        if(req.user.role !== 'admin' && req.user.id !== review.user.toString()){
             return res.status(401).json({success:false,message:`User ${req.user.id} is not authorized to delete this review`});
         }
 
@@ -134,7 +135,7 @@ exports.deleteReview = async (req,res,next) => {
 }
 
 //@desc     Edit review
-//@route    Update /api/v1/shops/:shopId/reviews/:id
+//@route    Put /api/v1/shops/:shopId/reviews/:id
 //@access   Private
 exports.editReview = async (req,res,next) => {
     try {
@@ -144,7 +145,7 @@ exports.editReview = async (req,res,next) => {
             return res.status(404).json({success: false, message: `No review with id ${req.params.id}`});
         }
 
-        if(req.user.id.toString() !== review.user){
+        if(req.user.id !== review.user.toString()){
             return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to edit this review`});
         }
 
