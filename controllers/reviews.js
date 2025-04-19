@@ -104,7 +104,7 @@ exports.createReview = async (req,res,next) => {
         res.status(200).json({success: true , data: review});
     } catch (error) {
         console.log(error.stack);
-        return res.status(500).json({success: false, message: 'Can not create review'});
+        return res.status(500).json({success: false, message: error.message});
     }
 }
 
