@@ -106,4 +106,5 @@ const ShopSchema = new mongoose.Schema({
     } 
 });
 
+
 module.exports=mongoose.model('Shop',ShopSchema);
