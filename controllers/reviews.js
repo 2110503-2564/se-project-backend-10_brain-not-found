@@ -42,6 +42,7 @@ exports.getReviews = async (req,res,next) => {
 
     try {
         const total = await Review.countDocuments();
+        const totalReview = await Review.countDocuments({ shop: req.params.shopId });
         query = query.skip(startIndex).limit(limit);
         const reviews = await query;
         const pagination = {};
@@ -62,7 +63,7 @@ exports.getReviews = async (req,res,next) => {
 
         res.status(200).json({
             success: true,
-            count: reviews.length,
+            count: totalReview,
             pagination,
             data: reviews
         });
