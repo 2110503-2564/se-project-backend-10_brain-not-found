@@ -63,7 +63,8 @@ exports.getReviews = async (req,res,next) => {
 
         res.status(200).json({
             success: true,
-            count: totalReview,
+            count: reviews.length,
+            totalReviews: totalReview,
             pagination,
             data: reviews
         });
