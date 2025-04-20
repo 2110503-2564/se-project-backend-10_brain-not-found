@@ -151,7 +151,7 @@ exports.editReview = async (req,res,next) => {
             return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to edit this review`});
         }
 
-        let updatedReview = await Review.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        let updatedReview = await Review.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
         res.status(200).json({
             success: true,
             data: updatedReview
@@ -159,6 +159,6 @@ exports.editReview = async (req,res,next) => {
 
     } catch (error) {
         console.log(error.stack);
-        return res.status(500).json({success: false, message: "Cannot edit Review"});
+        return res.status(500).json({success: false, message: error.message});
     } 
 }
