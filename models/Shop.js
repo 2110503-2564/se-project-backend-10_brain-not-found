@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Review = require('./Review');
 const ShopSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -58,33 +59,52 @@ const ShopSchema = new mongoose.Schema({
         ],
         required: [true, 'Please add at least 1 picture\n']
     },
-    shopRating: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 5,
-        set: val => Math.round(val * 10) / 10  // ปัดเศษให้ละเอียดถึงทศนิยม 1 ตำแหน่ง
-    },
-    numOfReviews: {
-        type: Number,
-        default: 0,
-        min: 0
-    },
     desc: {
         type: String,
         required: [true, 'Please add a description\n']
     }
+    
 }, {
     toJSON: {virtuals: true},
-    toObject: {virtuals: true}
+    toObject: {virtuals: true},
+    /* testing required */
+    virtuals: {
+        reservations: {
+            options: {
+                ref: 'Reservation',
+                localField: '_id',
+                foreignField: 'shop',
+                justOne:false
+            }
+        },
+        reviews: {
+            options: {
+                ref: 'Review',
+                localField: '_id',
+                foreignField: 'shop',
+                justOne: false
+            }
+        },
+        reviewCount: {
+            get() {return this.reviews? this.reviews.length : undefined}
+        },
+        averageRating: {
+            get() {
+                if (!this.reviews) return undefined;
+                if (this.reviews.length === 0) return 0; 
+
+                const DECIMAL_POINT = 1;
+                let ratingSum = 0;
+                this.reviews.forEach(review => {
+                    ratingSum += review.rating;
+                });
+
+                let avgRating = ratingSum / this.reviews.length;
+                return Math.round(avgRating * (10 ** DECIMAL_POINT)) / (10 ** DECIMAL_POINT); // rounds to DECIMAL_POINT
+            }
+        }
+    } 
 });
 
-// Reverse populate with virtuals
-ShopSchema.virtual('reservations' , {
-    ref: 'Reservation',
-    localField: '_id',
-    foreignField: 'shop',
-    justOne:false
-});
 
 module.exports=mongoose.model('Shop',ShopSchema);

@@ -30,6 +30,9 @@ const ReviewSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    edited: {
+        type: Date
     }
 }, {
     toJSON: { virtuals: true },
@@ -38,13 +41,5 @@ const ReviewSchema = new mongoose.Schema({
 
 // ป้องกันไม่ให้ user เดียวกันรีวิวร้านซ้ำได้
 ReviewSchema.index({ shop: 1, user: 1 }, { unique: true });
-
-// Reverse populate with virtuals
-ReviewSchema.virtual('reviews' , {
-    ref: 'Review',
-    localField: '_id',
-    foreignField: 'shop',
-    justOne:false
-});
 
 module.exports = mongoose.model('Review', ReviewSchema);
