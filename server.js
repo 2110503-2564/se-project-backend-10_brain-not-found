@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const shop =require('./routes/shops');
 const reservations = require('./routes/reservations');
 const review = require('./routes/reviews')
+const request = require('./routes/requests');
 const mongoSanitize=require('express-mongo-sanitize');
 const helmet=require('helmet');
 const {xss}=require('express-xss-sanitizer');
@@ -65,6 +66,7 @@ app.use('/api/v1/shops',shop);
 app.use('/api/v1/auth',auth);
 app.use('/api/v1/reservations',reservations);
 app.use('/api/v1/reviews', review);
+app.use('/api/v1/request', request);
 
 const server = app.listen(
     PORT, 
