@@ -1,7 +1,9 @@
 const Request = require('../models/Request');
 const Shop = require('../models/Shop');
 
-// @desc Approve a request and create a shop
+//@desc   Approve a request and create a shop
+//@route  Post /api/v1/requests/:id/approve
+//@access Private
 exports.approveRequest = async (req, res, next) => {
     try {
         const request = await Request.findById(req.params.id);
@@ -20,7 +22,9 @@ exports.approveRequest = async (req, res, next) => {
     }
 };
 
-// @desc Reject a request
+//@desc Reject a request
+//@route  Post /api/v1/requests/:id/reject
+//@access Private
 exports.rejectRequest = async (req, res, next) => {
     try {
         const request = await Request.findById(req.params.id);
