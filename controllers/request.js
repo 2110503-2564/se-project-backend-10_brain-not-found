@@ -21,12 +21,12 @@ exports.createRequest = async (req,res,next) => {
 exports.getRequests = async (req,res,next) => {
     try {
         let query;
-        if(req.user.role === 'admin' || req.user.role === 'shopOwner') {
+        if(req.user.role === 'admin') {
             query = Request.find().populate({
                 path: 'user',
                 select: 'name'
             });
-        } else {
+        } else if (req.user.role === 'shopOwner') {
             query = Request.find({user: req.user.id}).populate({
                 path: 'user',
                 select: 'name'
