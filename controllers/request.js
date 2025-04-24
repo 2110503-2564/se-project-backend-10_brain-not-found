@@ -23,15 +23,55 @@ exports.getRequests = async (req,res,next) => {
     try {
         let query;
         if(req.user.role === 'admin') {
-            query = Request.find().populate({
-                path: 'user',
-                select: 'name email tel'
-            });
+            if(req.query.status === 'pending') {
+                query = Request.find({status: 'pending'}).populate({
+                    path: 'user',
+                    select: 'name'
+                });
+            }
+            else if(req.query.status === 'approved') {
+                query = Request.find({status: 'approved'}).populate({
+                    path: 'user',
+                    select: 'name'
+                });
+            }
+            else if(req.query.status === 'rejected') {
+                query = Request.find({status: 'rejected'}).populate({
+                    path: 'user',
+                    select: 'name'
+                });
+            }
+            else {
+                query = Request.find().populate({
+                    path: 'user',
+                    select: 'name'
+                });
+            }
         } else if (req.user.role === 'shopOwner') {
-            query = Request.find({user: req.user.id}).populate({
-                path: 'user',
-                select: 'name email tel'
-            });
+            if(req.query.status === 'pending') {
+                query = Request.find({status: 'pending', user: req.user.id}).populate({
+                    path: 'user',
+                    select: 'name'
+                });
+            }
+            else if(req.query.status === 'approved') {
+                query = Request.find({status: 'approved', user: req.user.id}).populate({
+                    path: 'user',
+                    select: 'name'
+                });
+            }
+            else if(req.query.status === 'rejected') {
+                query = Request.find({status: 'rejected', user: req.user.id}).populate({
+                    path: 'user',
+                    select: 'name'
+                });
+            }
+            else{
+                query = Request.find({user: req.user.id}).populate({
+                    path: 'user',
+                    select: 'name'
+                });
+            }
         }
         const requests = await query;
         res.status(200).json({success: true , data: requests});
