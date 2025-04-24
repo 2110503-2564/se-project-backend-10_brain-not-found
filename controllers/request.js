@@ -120,3 +120,49 @@ exports.rejectRequest = async (req, res, next) => {
         res.status(500).json({ success: false, error: err.message });
     }
 };
+
+//@desc Delete request
+//@route Delete /api/v1/request/:id
+//@access Private
+exports.deleteRequest = async (req,res,next) => {
+    try {
+        let request = await Request.findById(req.params.id);
+
+        if (!request) {
+            return res.status(404).json({
+                success: false,
+                message: `No request with id ${req.params.id}`
+            });
+        }
+
+        // Make sure user is the request owner
+        if (request.user.toString() !== req.user.id) {
+            return res.status(401).json({
+                success: false,
+                message: `User ${req.user.id} is not authorized to delete this request`
+            });
+        }
+
+        // Allow delete only if status is 'pending' or 'reject'
+        if (!['pending', 'reject'].includes(request.status)) {
+            return res.status(400).json({
+                success: false,
+                message: `Request with status '${request.status}' cannot be deleted`
+            });
+        }
+
+        await request.deleteOne();
+
+        res.status(200).json({
+            success: true,
+            data: request
+        });
+    } catch (err) {
+        console.log(err.stack);
+        return res.status(500).json({
+            success: false,
+            message: "Cannot delete request"
+        });
+    }
+};
+
