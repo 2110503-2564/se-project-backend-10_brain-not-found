@@ -31,6 +31,9 @@ const RequestSchema = new mongoose.Schema({
     reason: {
         type: String,
         required: false
+    },
+    edited: {
+        type: Date
     }
 });
 

@@ -62,12 +62,41 @@ const ShopSchema = new mongoose.Schema({
     desc: {
         type: String,
         required: [true, 'Please add a description\n']
+    },
+    shopType: {
+        type: String,
+        required: [true, 'Please specify a shop type']
+    },
+    services: [{
+        name: {
+            type: String,
+            required: [true, 'Please add a service name'],
+            max: [50, 'Service name cannot be over 50 characters']
+        },
+        desc: {
+            type: String,
+            required: [true, 'Please add a service description'],
+            max: [100, 'Service description cannot be over 100 characters']
+        },
+        duration: {
+            type: Number,
+            required: [true, 'Please add a service duration'],
+            min: [0, 'Service duration cannot be negative']
+        },
+        price: {
+            type: Number,
+            required: [true, 'Please add a service price'],
+            min: [0, 'Service price cannot be negative']
+        }
+    }],
+    certificate: {
+        type: String,
+        required: [true, 'Please add a certificate']
     }
     
 }, {
     toJSON: {virtuals: true},
     toObject: {virtuals: true},
-    /* testing required */
     virtuals: {
         reservations: {
             options: {
