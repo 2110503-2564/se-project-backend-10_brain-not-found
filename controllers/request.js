@@ -25,12 +25,12 @@ exports.getRequests = async (req,res,next) => {
         if(req.user.role === 'admin') {
             query = Request.find().populate({
                 path: 'user',
-                select: 'name'
+                select: 'name email tel'
             });
         } else if (req.user.role === 'shopOwner') {
             query = Request.find({user: req.user.id}).populate({
                 path: 'user',
-                select: 'name'
+                select: 'name email tel'
             });
         }
         const requests = await query;
@@ -72,7 +72,7 @@ exports.rejectRequest = async (req, res, next) => {
         if (!request) return res.status(404).json({ success: false, message: 'Request not found' });
 
         request.status = 'rejected';
-        request.rejectReason = req.body.rejectReason || 'No reason provided';
+        request.reason = req.body.reason || 'No reason provided';
         await request.save();
 
         res.status(200).json({ success: true, message: 'Request rejected', data: request });
