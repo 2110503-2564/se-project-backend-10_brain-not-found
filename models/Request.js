@@ -27,7 +27,7 @@ const RequestSchema = new mongoose.Schema({
     },
     reason: {
         type: String,
-        maxlength: [250, 'Reason not be more than 250 characters\n']
+        maxlength: [250, 'Reason cannot be longer than 250 characters\n']
     },
     edited: {
         type: Date
