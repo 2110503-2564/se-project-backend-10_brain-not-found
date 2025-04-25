@@ -85,25 +85,19 @@ exports.getRequests = async (req, res, next) => {
 exports.getRequest = async (req, res, next) => {
     try {
         const { id } = req.params;
-        let query;
-
-        // check role
-        if(req.user.role === 'admin') {
-            query = Request.findById(id).populate({
-                path: 'user',
-                select: 'name'
-            });
-        } else if (req.user.role === 'shopOwner') {
-            query = Request.findOne({ _id: id, user: req.user.id }).populate({
-                path: 'user',
-                select: 'name'
-            });
-        }
-
-        const request = await query;
+        let request = await Request.findById(id).populate({
+            path: 'user',
+            select: 'name email tel'
+        });
 
         if (!request) {
             return res.status(404).json({ success: false, message: 'Request not found' });
+        }
+
+        if (req.user.id !== request.user._id.toString() && req.user.role !== 'admin') {
+            return res.status(401).json({
+                success: false,
+                message: `User ${req.user.id} is not allowed to access this request`})
         }
 
         res.status(200).json({ success: true, data: request });
