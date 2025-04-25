@@ -33,21 +33,21 @@ exports.getRequests = async (req, res, next) => {
             if (req.query.status) {
                 query = Request.find({ status: req.query.status })
                     .populate(populateOptions)
-                    .select('createdAt user reason'); // ดึงเฉพาะ createdAt, user, reason
+                    .select('createdAt user reason shop status'); // ดึงเฉพาะ createdAt, user, reason
             } else {
                 query = Request.find()
                     .populate(populateOptions)
-                    .select('createdAt user reason'); // ดึงเฉพาะ createdAt, user, reason
+                    .select('createdAt user reason shop status'); // ดึงเฉพาะ createdAt, user, reason
             }
         } else if (req.user.role === 'shopOwner') {
              if (req.query.status) {
                 query = Request.find({ status: req.query.status, user: req.user.id })
                     .populate(populateOptions)
-                    .select('createdAt user reason'); // ดึงเฉพาะ createdAt, user, reason
+                    .select('createdAt user reason shop status'); // ดึงเฉพาะ createdAt, user, reason
             } else {
                 query = Request.find({ user: req.user.id })
                     .populate(populateOptions)
-                    .select('createdAt user reason'); // ดึงเฉพาะ createdAt, user, reason
+                    .select('createdAt user reason shop status'); // ดึงเฉพาะ createdAt, user, reason
             }
         }
 
