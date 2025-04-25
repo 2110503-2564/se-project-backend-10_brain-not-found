@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Shop = require('./Shop')
 
 const RequestSchema = new mongoose.Schema({
     user: {
@@ -11,8 +12,7 @@ const RequestSchema = new mongoose.Schema({
         default: Date.now
     },
     shop: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Shop',
+        type: Shop.schema,
         required: true
     },
     status: {
