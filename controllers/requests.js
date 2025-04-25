@@ -4,7 +4,7 @@ const Shop = require('../models/Shop');
 
 //create request
 //@desc     Create request
-//@route    Post /api/v1/request
+//@route    Post /api/v1/requests
 //@access   Private
 exports.createRequest = async (req,res,next) => {
     try {
@@ -16,73 +16,51 @@ exports.createRequest = async (req,res,next) => {
         return res.status(500).json({success: false, message: error.message});
     }
 }
-//@desc     Get all request
-//@route    Get /api/v1/request
-//@access   Private
-exports.getRequests = async (req,res,next) => {
+//@desc    Get all request
+//@route   Get /api/v1/requests
+//@access  Private
+exports.getRequests = async (req, res, next) => {
     try {
         let query;
-        if(req.user.role === 'admin') {
-            if(req.query.status === 'pending') {
-                query = Request.find({status: 'pending'}).populate({
-                    path: 'user',
-                    select: 'name'
-                });
+        const populateOptions = [
+            {
+                path: 'user',
+                select: 'name' // ดึงเฉพาะฟิลด์ name ของ User
             }
-            else if(req.query.status === 'approved') {
-                query = Request.find({status: 'approved'}).populate({
-                    path: 'user',
-                    select: 'name'
-                });
-            }
-            else if(req.query.status === 'rejected') {
-                query = Request.find({status: 'rejected'}).populate({
-                    path: 'user',
-                    select: 'name'
-                });
-            }
-            else {
-                query = Request.find().populate({
-                    path: 'user',
-                    select: 'name'
-                });
+        ];
+
+        if (req.user.role === 'admin') {
+            if (req.query.status) {
+                query = Request.find({ status: req.query.status })
+                    .populate(populateOptions)
+                    .select('createdAt user reason'); // ดึงเฉพาะ createdAt, user, reason
+            } else {
+                query = Request.find()
+                    .populate(populateOptions)
+                    .select('createdAt user reason'); // ดึงเฉพาะ createdAt, user, reason
             }
         } else if (req.user.role === 'shopOwner') {
-            if(req.query.status === 'pending') {
-                query = Request.find({status: 'pending', user: req.user.id}).populate({
-                    path: 'user',
-                    select: 'name'
-                });
-            }
-            else if(req.query.status === 'approved') {
-                query = Request.find({status: 'approved', user: req.user.id}).populate({
-                    path: 'user',
-                    select: 'name'
-                });
-            }
-            else if(req.query.status === 'rejected') {
-                query = Request.find({status: 'rejected', user: req.user.id}).populate({
-                    path: 'user',
-                    select: 'name'
-                });
-            }
-            else{
-                query = Request.find({user: req.user.id}).populate({
-                    path: 'user',
-                    select: 'name'
-                });
+             if (req.query.status) {
+                query = Request.find({ status: req.query.status, user: req.user.id })
+                    .populate(populateOptions)
+                    .select('createdAt user reason'); // ดึงเฉพาะ createdAt, user, reason
+            } else {
+                query = Request.find({ user: req.user.id })
+                    .populate(populateOptions)
+                    .select('createdAt user reason'); // ดึงเฉพาะ createdAt, user, reason
             }
         }
+
         const requests = await query;
-        res.status(200).json({success: true , data: requests});
+        res.status(200).json({ success: true, data: requests });
     } catch (error) {
         console.log(error.stack);
-        return res.status(500).json({success: false, message: error.message});
+        return res.status(500).json({ success: false, message: error.message });
     }
-}
+};
 
 //@desc     Get a single request
-//@route    Get /api/v1/request/:id
+//@route    Get /api/v1/requests/:id
 //@access   Private
 exports.getRequest = async (req, res, next) => {
     try {
@@ -156,7 +134,7 @@ exports.rejectRequest = async (req, res, next) => {
 };
 
 //@desc Delete request
-//@route Delete /api/v1/request/:id
+//@route Delete /api/v1/requests/:id
 //@access Private
 exports.deleteRequest = async (req,res,next) => {
     try {

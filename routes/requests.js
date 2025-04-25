@@ -1,9 +1,7 @@
 const express = require('express');
-const { createRequest , getRequests, getRequest, approveRequest, rejectRequest, deleteRequest  } = require('../controllers/request');
+const { createRequest , getRequests, getRequest, approveRequest, rejectRequest, deleteRequest  } = require('../controllers/requests');
 const router = express.Router();
 const {protect,authorize} = require('../middleware/auth');
-
-
 
 router.route('/')
     .get(protect,authorize('admin','shopOwner'),getRequests)

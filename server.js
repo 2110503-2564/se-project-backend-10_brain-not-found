@@ -66,7 +66,7 @@ app.use('/api/v1/shops',shop);
 app.use('/api/v1/auth',auth);
 app.use('/api/v1/reservations',reservations);
 app.use('/api/v1/reviews', review);
-app.use('/api/v1/request', request);
+app.use('/api/v1/requests', request);
 
 const server = app.listen(
     PORT, 
