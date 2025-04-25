@@ -181,3 +181,29 @@ exports.deleteRequest = async (req,res,next) => {
     }
 };
 
+
+//@desc     Edit request
+//@route    Put /api/v1/request/:id
+//@access   Private
+exports.editRequest = async (req,res,next) => {
+    try {
+        let request = await Request.findById(req.params.id);
+        if(!request){
+            return res.status(404).json({success: false, message: `No request with id ${req.params.id}`});
+        }
+
+        if(req.user.id !== request.user.toString()){
+            return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to edit this request`});
+        }
+
+        let updatedRequest = await Request.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
+        res.status(200).json({
+            success: true,
+            data: updatedRequest
+        });
+
+    } catch (error) {
+        console.log(error.stack);
+        return res.status(500).json({success: false, message: error.message});
+    } 
+}
