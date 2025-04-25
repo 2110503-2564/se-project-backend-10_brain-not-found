@@ -178,7 +178,7 @@ exports.deleteRequest = async (req,res,next) => {
         }
 
         // Allow delete only if status is 'pending' or 'reject'
-        if (!['pending', 'reject'].includes(request.status)) {
+        if (!['pending', 'rejected'].includes(request.status)) {
             return res.status(400).json({
                 success: false,
                 message: `Request with status '${request.status}' cannot be deleted`
