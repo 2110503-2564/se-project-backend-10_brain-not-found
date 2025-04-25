@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Shop = require('./Shop')
 
 const RequestSchema = new mongoose.Schema({
     user: {
@@ -11,13 +10,11 @@ const RequestSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    shop: { 
-        // Directly imports the shop schema to be used here
-        // Make edits on the shop schema instead
-        type: Shop,
+    shop: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Shop',
         required: true
     },
-    
     status: {
         type: String,
         enum: ['pending', 'approved', 'rejected'],
@@ -29,12 +26,11 @@ const RequestSchema = new mongoose.Schema({
         default: 'create'
     },
     reason: {
-        type: String,
-        required: false
+        type: String
     },
     edited: {
         type: Date
     }
 });
 
-module.exports = mongoose.model('Request',RequestSchema);
+module.exports = mongoose.model('Request', RequestSchema);
