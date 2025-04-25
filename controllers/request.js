@@ -81,6 +81,40 @@ exports.getRequests = async (req,res,next) => {
     }
 }
 
+//@desc     Get a single request
+//@route    Get /api/v1/request/:id
+//@access   Private
+exports.getRequest = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        let query;
+
+        // check role
+        if(req.user.role === 'admin') {
+            query = Request.findById(id).populate({
+                path: 'user',
+                select: 'name'
+            });
+        } else if (req.user.role === 'shopOwner') {
+            query = Request.findOne({ _id: id, user: req.user.id }).populate({
+                path: 'user',
+                select: 'name'
+            });
+        }
+
+        const request = await query;
+
+        if (!request) {
+            return res.status(404).json({ success: false, message: 'Request not found' });
+        }
+
+        res.status(200).json({ success: true, data: request });
+
+    } catch (error) {
+        console.log(error.stack);
+        return res.status(500).json({ success: false, message: error.message });
+    }
+}
 
 //@desc   Approve a request and create a shop
 //@route  Post /api/v1/requests/:id/approve
