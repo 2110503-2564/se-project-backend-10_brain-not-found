@@ -9,6 +9,9 @@ const Shop = require('../models/Shop');
 exports.createRequest = async (req,res,next) => {
     try {
         req.body.user = req.user.id;
+        if (req.user.role !== 'shopOwner'){
+            return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to create request`});
+        }
         const request = await Request.create(req.body);
         res.status(200).json({success: true , data: request});
     } catch (error) {
