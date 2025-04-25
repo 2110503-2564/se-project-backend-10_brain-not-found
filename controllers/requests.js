@@ -240,6 +240,9 @@ exports.editRequest = async (req,res,next) => {
             });
         }
 
+        updateData.status = 'pending';
+        updateData.edited = Date.now();
+
         let updatedRequest = await Request.findByIdAndUpdate(req.params.id, updateData, {new: true, runValidators: true});
         res.status(200).json({
             success: true,
