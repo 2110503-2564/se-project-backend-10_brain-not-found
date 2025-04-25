@@ -2,23 +2,40 @@ const Request = require('../models/Request');
 const User = require('../models/User');
 const Shop = require('../models/Shop');
 
-//create request
-//@desc     Create request
-//@route    Post /api/v1/requests
-//@access   Private
-exports.createRequest = async (req,res,next) => {
+// @desc     Create request
+// @route    Post /api/v1/requests
+// @access   Private
+exports.createRequest = async (req, res, next) => {
     try {
         req.body.user = req.user.id;
-        if (req.user.role !== 'shopOwner'){
-            return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to create request`});
+
+        if (req.user.role !== 'shopOwner') {
+            return res.status(401).json({
+                success: false,
+                message: `User ${req.user.id} is not authorized to create request`
+            });
         }
+
+        // Prevent setting these fields manually
+        delete req.body.createdAt;
+        delete req.body.edited;
+        delete req.body.status;
+
         const request = await Request.create(req.body);
-        res.status(200).json({success: true , data: request});
+
+        res.status(200).json({
+            success: true,
+            data: request
+        });
     } catch (error) {
         console.log(error.stack);
-        return res.status(500).json({success: false, message: error.message});
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
-}
+};
+
 //@desc    Get all request
 //@route   Get /api/v1/requests
 //@access  Private
@@ -103,8 +120,16 @@ exports.getRequest = async (req, res, next) => {
 exports.approveRequest = async (req, res, next) => {
     try {
         const request = await Request.findById(req.params.id);
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Unauthorized' });
+        }
+        
         if (!request) return res.status(404).json({ success: false, message: 'Request not found' });
 
+        if (request.status !== 'pending') {
+            return res.status(400).json({ success: false, message: `Request already ${request.status}` });
+        }
+        
         // Create a shop from request data
         const shop = await Shop.create({ ...request.toObject(), status: 'approved' });
 
@@ -125,6 +150,14 @@ exports.rejectRequest = async (req, res, next) => {
     try {
         const request = await Request.findById(req.params.id);
         if (!request) return res.status(404).json({ success: false, message: 'Request not found' });
+
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Unauthorized' });
+        }
+
+        if (request.status !== 'pending') {
+            return res.status(400).json({ success: false, message: `Request already ${request.status}` });
+        }
 
         request.status = 'rejected';
         request.reason = req.body.reason || 'No reason provided';
