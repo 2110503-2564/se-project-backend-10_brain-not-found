@@ -125,7 +125,7 @@ exports.approveRequest = async (req, res, next) => {
         }
         
         // Create a shop from request data
-        const shop = await Shop.create({ ...request.toObject(), status: 'approved' });
+        const shop = await Shop.create(request.shop);
 
         // Update request status and remove (or keep for record)
         request.status = 'approved';
