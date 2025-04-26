@@ -16,3 +16,33 @@ router.route('/:id')
     
 
 module.exports = router;
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Request
+ *     description: Operations regarding shop requests
+ * 
+ * paths:
+ *   /requests:
+ *     get:
+ *       tags:
+ *         - Request
+ *       summary: Get your own requests if you are a shop owner, or all requests if you are an admin.
+ *       responses:
+ *         200:
+ *           description: 'Successful Operation: Returns own request / all requests'
+ * components:
+ *   schemas:
+ *      Request:
+ *        type: object
+ *        properties:
+ *          id:
+ *            type: string
+ *            format: UUID
+ *            example: uoua1241241
+ *          status:
+ *            type: string
+ *            example: pending
+ * 
+ */
