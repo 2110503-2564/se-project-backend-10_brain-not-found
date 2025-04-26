@@ -20,7 +20,7 @@ exports.createRequest = async (req, res, next) => {
         delete req.body.createdAt;
         delete req.body.edited;
         delete req.body.status;
-
+        delete req.body.reason;
         const request = await Request.create(req.body);
 
         res.status(200).json({
@@ -224,13 +224,13 @@ exports.editRequest = async (req,res,next) => {
         }
 
         // Prevent editing of 'createdAt', 'status', 'edited' fields
-        const { createdAt, status, edited, ...updateData } = req.body;
+        const { createdAt, status, edited , reason , ...updateData } = req.body;
 
         // Check if any of the restricted fields are in the request body
-        if (createdAt || status || edited) {
+        if (createdAt || status || edited || reason) {
             return res.status(400).json({
                 success: false,
-                message: "You are not allowed to edit 'createdAt', 'status', or 'edited' fields"
+                message: "You are not allowed to edit 'createdAt', 'status', 'reason' or 'edited' fields"
             });
         }
 
