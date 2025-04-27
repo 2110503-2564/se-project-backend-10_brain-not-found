@@ -7,8 +7,8 @@ router.route('/')
     .get(protect,authorize('admin','shopOwner'),getRequests)
     .post(protect,authorize('shopOwner'),createRequest);
 
-router.route('/:id/approve').put(protect,authorize('admin'),approveShop);
-router.route('/:id/reject').put(protect,authorize('admin'),rejectShop);
+router.route('/:id/approve').put(protect,authorize('admin'),approveRequest);
+router.route('/:id/reject').put(protect,authorize('admin'),rejectRequest);
 
 router.route('/:id')
     .get(protect, authorize('admin', 'shopOwner'), getRequest)
