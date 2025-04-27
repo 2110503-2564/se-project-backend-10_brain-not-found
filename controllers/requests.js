@@ -257,32 +257,48 @@ exports.editReason = async (req, res, next) => {
         const requestId = req.params.id;
         const { reason } = req.body;
 
+        // // ตรวจสอบว่า reason เป็น string
         if (typeof reason !== 'string') {
             return res.status(400).json({ success: false, message: "Reason must be a string" });
         }
 
-        // Check if user is admin
+        // ตรวจสอบความยาวของ reason ไม่เกิน 250 ตัวอักษร
+        if (reason.length > 250) {
+            return res.status(400).json({ success: false, message: "Reason cannot be longer than 250 characters" });
+        }
+
+        // ตรวจสอบว่าผู้ใช้มีสิทธิ์หรือไม่
         if (req.user.role !== 'admin') {
             return res.status(401).json({ success: false, message: `User ${req.user.id} is not authorized to edit reason` });
         }
 
-        const updatedRequest = await Request.findByIdAndUpdate(
-            requestId,
-            { $set: { reason: reason } }, // อัปเดตแค่ reason เท่านั้น
-            {
-                new: true, // ส่งข้อมูลล่าสุดกลับมา
-                runValidators: false // ❗ ปิด validate ทั้ง Document เพราะเราเปลี่ยนแค่ field เดียว
-            }
-        );
+        // ✅ หา request มาก่อนเพื่อเช็ค status
+        const request = await Request.findById(requestId);
 
-        if (!updatedRequest) {
+        if (!request) {
             return res.status(404).json({ success: false, message: `No request with id ${requestId}` });
         }
+
+        // ✅ เช็คว่าต้องเป็น status = "reject" เท่านั้น
+        if (request.status !== 'rejected') {
+            return res.status(400).json({ success: false, message: `Cannot edit reason unless status is 'reject'` });
+        }
+
+        // ✅ อัปเดต reason เท่านั้น
+        const updatedRequest = await Request.findByIdAndUpdate(
+            requestId,
+            { $set: { reason: reason } },
+            {
+                new: true,
+                runValidators: false
+            }
+        );
 
         res.status(200).json({
             success: true,
             data: updatedRequest
         });
+
     } catch (error) {
         console.log(error.stack);
         return res.status(500).json({ success: false, message: error.message });
