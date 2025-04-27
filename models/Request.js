@@ -1,5 +1,7 @@
+// c:\vscode_test\softwareEng\se-project-backend-10_brain-not-found\models\Request.js
 const mongoose = require('mongoose');
-const {ShopSchema} = require('./Shop')
+// Import เฉพาะ ShopSchema ที่ export ออกมาใหม่
+const { ShopSchema } = require('./Shop');
 
 const RequestSchema = new mongoose.Schema({
     user: {
@@ -11,13 +13,11 @@ const RequestSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    shop: { 
-        // Directly imports the shop schema to be used here
-        // Make edits on the shop schema instead
+    shop: {
+        // ตอนนี้ ShopSchema จะมีค่าที่ถูกต้องแล้ว
         type: ShopSchema,
         required: true
     },
-    
     status: {
         type: String,
         enum: ['pending', 'approved', 'rejected'],
@@ -37,4 +37,4 @@ const RequestSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Request',RequestSchema);
+module.exports = mongoose.model('Request', RequestSchema);

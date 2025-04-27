@@ -1,5 +1,8 @@
+// c:\vscode_test\softwareEng\se-project-backend-10_brain-not-found\models\Shop.js
+
 const mongoose = require('mongoose');
 const Review = require('./Review');
+
 const ShopSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -29,7 +32,7 @@ const ShopSchema = new mongoose.Schema({
         required: [true, 'Please add a phone number\n'],
         unique: true,
         match: [
-            /^(\d{3}-?\d{3}-?\d{4})$/, 
+            /^(\d{3}-?\d{3}-?\d{4})$/,
             'Please add a valid phone number\n'
         ]
     },
@@ -93,7 +96,7 @@ const ShopSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a certificate']
     }
-    
+
 }, {
     toJSON: {virtuals: true},
     toObject: {virtuals: true},
@@ -120,7 +123,7 @@ const ShopSchema = new mongoose.Schema({
         averageRating: {
             get() {
                 if (!this.reviews) return undefined;
-                if (this.reviews.length === 0) return 0; 
+                if (this.reviews.length === 0) return 0;
 
                 const DECIMAL_POINT = 1;
                 let ratingSum = 0;
@@ -132,8 +135,10 @@ const ShopSchema = new mongoose.Schema({
                 return Math.round(avgRating * (10 ** DECIMAL_POINT)) / (10 ** DECIMAL_POINT); // rounds to DECIMAL_POINT
             }
         }
-    } 
+    }
 });
 
 
-module.exports=mongoose.model('Shop',ShopSchema);
+const Shop = mongoose.model('Shop', ShopSchema);
+
+module.exports = { Shop, ShopSchema };
