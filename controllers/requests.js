@@ -1,6 +1,7 @@
 const Request = require('../models/Request');
 const User = require('../models/User');
 const Shop = require('../models/Shop');
+const mongoose = require('mongoose');
 
 // @desc     Create request
 // @route    Post /api/v1/requests
@@ -113,7 +114,6 @@ exports.getRequest = async (req, res, next) => {
 //@access Private
 exports.approveRequest = async (req, res, next) => {
     const session = await mongoose.startSession();
-    session.startSesstion();
 
     try {
         const request = await Request.findById(req.params.id);
@@ -139,6 +139,8 @@ exports.approveRequest = async (req, res, next) => {
 
         res.status(200).json({ success: true, message: 'Request approved, shop created', data: shop });
     } catch (err) {
+        await session.abortTransaction();
+        session.endSession();
         res.status(500).json({ success: false, error: err.message });
     }
 };
