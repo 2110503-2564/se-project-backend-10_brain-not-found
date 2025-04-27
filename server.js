@@ -29,7 +29,7 @@ const swaggerOptions={
     swaggerDefinition:{
         openapi: '3.0.0',
         info: {
-            title: 'Library API',
+            title: 'Massage Shop Reservation API',
             version: '1.0.0',
             description: 'A simple Express Message Shop reservation API'
         },
@@ -66,7 +66,7 @@ app.use('/api/v1/shops',shop);
 app.use('/api/v1/auth',auth);
 app.use('/api/v1/reservations',reservations);
 app.use('/api/v1/reviews', review);
-app.use('/api/v1/request', request);
+app.use('/api/v1/requests', request);
 
 const server = app.listen(
     PORT, 
@@ -82,6 +82,6 @@ process.on('unhandledRejection' , (err,promise) => {
 
 app.use(cors({
     origin: "http://localhost:3000", // อนุญาตเฉพาะ frontend ที่รันบน localhost:3000
-    methods: "GET,POST,PUT,DELETE",
+    methods: "GET,POST,PUT,DELETE,PATCH",
     allowedHeaders: "Content-Type,Authorization"
 }));

@@ -136,4 +136,7 @@ const ShopSchema = new mongoose.Schema({
 });
 
 
-module.exports=mongoose.model('Shop',ShopSchema);
+module.exports={
+    Shop: mongoose.model('Shop',ShopSchema),
+    ShopSchema
+};
