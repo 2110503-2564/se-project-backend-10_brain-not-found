@@ -248,3 +248,45 @@ exports.editRequest = async (req,res,next) => {
         return res.status(500).json({success: false, message: error.message});
     } 
 }
+
+//@desc     Edit request reason
+//@route    PATCH /api/v1/requests/:id/reason
+//@access   Private
+exports.editReason = async (req, res, next) => {
+    try {
+        const requestId = req.params.id;
+        const { reason } = req.body;
+
+        if (typeof reason !== 'string') {
+            return res.status(400).json({ success: false, message: "Reason must be a string" });
+        }
+
+        // Check if user is admin
+        if (req.user.role !== 'admin') {
+            return res.status(401).json({ success: false, message: `User ${req.user.id} is not authorized to edit reason` });
+        }
+
+        const updatedRequest = await Request.findByIdAndUpdate(
+            requestId,
+            { $set: { reason: reason } }, // อัปเดตแค่ reason เท่านั้น
+            {
+                new: true, // ส่งข้อมูลล่าสุดกลับมา
+                runValidators: false // ❗ ปิด validate ทั้ง Document เพราะเราเปลี่ยนแค่ field เดียว
+            }
+        );
+
+        if (!updatedRequest) {
+            return res.status(404).json({ success: false, message: `No request with id ${requestId}` });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: updatedRequest
+        });
+    } catch (error) {
+        console.log(error.stack);
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+

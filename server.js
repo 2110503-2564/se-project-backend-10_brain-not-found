@@ -82,6 +82,6 @@ process.on('unhandledRejection' , (err,promise) => {
 
 app.use(cors({
     origin: "http://localhost:3000", // อนุญาตเฉพาะ frontend ที่รันบน localhost:3000
-    methods: "GET,POST,PUT,DELETE",
+    methods: "GET,POST,PUT,DELETE,PATCH",
     allowedHeaders: "Content-Type,Authorization"
 }));

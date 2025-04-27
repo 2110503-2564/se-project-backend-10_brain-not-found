@@ -1,5 +1,5 @@
 const express = require('express');
-const { createRequest , getRequests, getRequest, approveRequest, rejectRequest, deleteRequest, editRequest  } = require('../controllers/requests');
+const { createRequest , getRequests, getRequest, approveRequest, rejectRequest, deleteRequest, editRequest , editReason } = require('../controllers/requests');
 const router = express.Router();
 const {protect,authorize} = require('../middleware/auth');
 
@@ -14,7 +14,9 @@ router.route('/:id')
     .delete(protect, authorize('shopOwner'), deleteRequest)
     .put(protect, authorize('shopOwner'), editRequest);
     
-
+router.route('/:id/reason')
+    .patch(protect, authorize('admin'), editReason);
+    
 module.exports = router;
 
 /**
