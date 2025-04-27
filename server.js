@@ -25,19 +25,119 @@ connectDB();
 
 
 const app = express();
-const swaggerOptions={
-    swaggerDefinition:{
+const swaggerOptions = {
+    swaggerDefinition: {
         openapi: '3.0.0',
         info: {
             title: 'Massage Shop Reservation API',
             version: '1.0.0',
             description: 'A simple Express Message Shop reservation API'
         },
-        servers:[{
-            url: process.env.HOST + ":" + PORT + '/api/v1'
+        servers: [{
+            url: process.env.HOST + ":" + PORT
         }],
+        components: {
+            schemas: {
+                Request: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                            description: 'The unique identifier of the request.',
+                            example: '654321abcdef0123456789'
+                        },
+                        user: {
+                            type: 'string',
+                            description: 'The ID of the user who created the request.',
+                            example: '654321fedcba9876543210'
+                        },
+                        shop: {
+                            type: 'object',
+                            description: 'The shop details associated with the request.',
+                            properties: {
+                                name: {
+                                    type: 'string',
+                                    description: 'The name of the shop.',
+                                    example: 'My Shop'
+                                },
+                                address: {
+                                    type: 'string',
+                                    description: 'The address of the shop.',
+                                    example: '123 Main St'
+                                }
+                            }
+                        },
+                        status: {
+                            type: 'string',
+                            enum: [
+                                'pending',
+                                'approved',
+                                'rejected'
+                            ],
+                            description: 'The status of the request.',
+                            example: 'pending'
+                        },
+                        reason: {
+                            type: 'string',
+                            description: 'The reason for the request (if applicable).',
+                            example: 'Request for new shop'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'The timestamp when the request was created.',
+                            example: '2024-01-01T00:00:00.000Z'
+                        }
+                    }
+                },
+                Shop: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                            description: 'The unique identifier of the shop.',
+                            example: '654321abcdef0123456789'
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'The name of the shop.',
+                            example: 'My Shop'
+                        },
+                        address: {
+                            type: 'string',
+                            description: 'The address of the shop.',
+                            example: '123 Main St'
+                        },
+                        owner: {
+                            type: 'string',
+                            description: 'The ID of the shop owner.',
+                            example: '654321fedcba9876543210'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'The timestamp when the shop was created.',
+                            example: '2024-01-01T00:00:00.000Z'
+                        }
+                    }
+                }
+            },
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    description: 'JWT Bearer token is required to access this API'
+                }
+            }
+        },
+        security: [{
+            bearerAuth: []
+        }]
     },
-    apis:['./routes/*.js'],
+    apis: [
+        './routes/*.js'
+    ]
 };
 const swaggerDocs=swaggerJsDoc(swaggerOptions);
 app.use('/api-docs',swaggerUI.serve, swaggerUI.setup(swaggerDocs));
