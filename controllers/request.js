@@ -83,7 +83,7 @@ exports.getRequests = async (req,res,next) => {
 
 
 //@desc   Approve a request and create a shop
-//@route  Post /api/v1/requests/:id/approve
+//@route  Put /api/v1/requests/:id/approve
 //@access Private
 exports.approveRequest = async (req, res, next) => {
     try {
@@ -91,7 +91,7 @@ exports.approveRequest = async (req, res, next) => {
         if (!request) return res.status(404).json({ success: false, message: 'Request not found' });
 
         // Create a shop from request data
-        const shop = await Shop.create({ ...request.toObject(), status: 'approved' });
+        const shop = await Shop.create({ ...request.shop.toObject(), status: 'approved' });
 
         // Update request status and remove (or keep for record)
         request.status = 'approved';
@@ -103,8 +103,8 @@ exports.approveRequest = async (req, res, next) => {
     }
 };
 
-//@desc Reject a request
-//@route  Post /api/v1/requests/:id/reject
+//@desc   Reject a request
+//@route  Put /api/v1/requests/:id/reject
 //@access Private
 exports.rejectRequest = async (req, res, next) => {
     try {

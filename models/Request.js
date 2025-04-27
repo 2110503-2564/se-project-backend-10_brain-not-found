@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Shop = require('./Shop')
+const { schema: ShopSchema } = require('./Shop');
 
 const RequestSchema = new mongoose.Schema({
     user: {
@@ -14,7 +14,7 @@ const RequestSchema = new mongoose.Schema({
     shop: { 
         // Directly imports the shop schema to be used here
         // Make edits on the shop schema instead
-        type: Shop,
+        type: ShopSchema,
         required: true
     },
     

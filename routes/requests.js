@@ -8,7 +8,7 @@ router.route('/')
     .get(protect,authorize('admin','shopOwner'),getRequests)
     .post(protect,authorize('shopOwner'),createRequest);
 
-router.route('/:id/approve').post(protect,authorize('admin'),approveShop);
-router.route('/:id/reject').post(protect,authorize('admin'),rejectShop);
+router.route('/:id/approve').put(protect,authorize('admin'),approveShop);
+router.route('/:id/reject').put(protect,authorize('admin'),rejectShop);
 
 module.exports = router;
