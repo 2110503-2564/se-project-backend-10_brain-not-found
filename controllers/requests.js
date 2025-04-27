@@ -1,6 +1,7 @@
 const Request = require('../models/Request');
 const User = require('../models/User');
-const Shop = require('../models/Shop');
+const { Shop }= require('../models/Shop');
+const mongoose = require('mongoose');
 
 // @desc     Create request
 // @route    Post /api/v1/requests
@@ -108,37 +109,61 @@ exports.getRequest = async (req, res, next) => {
     }
 }
 
-//@desc   Approve a request and create a shop
-//@route  Post /api/v1/requests/:id/approve
-//@access Private
 exports.approveRequest = async (req, res, next) => {
+    const session = await mongoose.startSession();
     try {
-        const request = await Request.findById(req.params.id);
+        session.startTransaction(); // <--- แก้ไขเป็น startTransaction()
+
+        const request = await Request.findById(req.params.id).session(session); // ควรใช้ .session() ในการ query ด้วย
         if (req.user.role !== 'admin') {
+            await session.abortTransaction(); // Abort ก่อน return
+            session.endSession();
             return res.status(403).json({ success: false, message: 'Unauthorized' });
         }
-        
-        if (!request) return res.status(404).json({ success: false, message: 'Request not found' });
+
+        if (!request) {
+            await session.abortTransaction(); // Abort ก่อน return
+            session.endSession();
+            return res.status(404).json({ success: false, message: 'Request not found' });
+        }
 
         if (request.status !== 'pending') {
+            await session.abortTransaction(); // Abort ก่อน return
+            session.endSession();
             return res.status(400).json({ success: false, message: `Request already ${request.status}` });
         }
-        
-        // Create a shop from request data
-        const shop = await Shop.create(request.shop);
 
-        // Update request status and remove (or keep for record)
+        // Create a new shop using the session
+        // ใช้ request.shop โดยตรง ไม่ต้องใส่ใน array ถ้า schema ถูกต้อง
+        const shopData = request.shop.toObject ? request.shop.toObject() : request.shop; // แปลงเป็น plain object ก่อน
+        delete shopData._id; // ลบ _id เดิมทิ้ง (ถ้ามี) เพื่อให้ MongoDB สร้างใหม่
+        const createdShops = await Shop.create([shopData], { session }); // ใช้ create กับ session
+
+        // Update request status using the session
         request.status = 'approved';
-        await request.save();
+        await request.save({ session });
 
-        res.status(200).json({ success: true, message: 'Request approved, shop created', data: shop });
+        // Commit the transaction
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(200).json({ success: true, message: 'Request approved, shop created', data: createdShops[0] }); // ส่ง shop ที่สร้างกลับไป
+
     } catch (err) {
+        // If an error occurred, abort the whole transaction
+        // ตรวจสอบก่อนว่า transaction เริ่มหรือยังก่อน abort (เผื่อ error เกิดก่อน startTransaction)
+        if (session.inTransaction()) {
+             await session.abortTransaction();
+        }
+        session.endSession();
+        console.error("Transaction Error:", err); // Log error เพื่อ debug
         res.status(500).json({ success: false, error: err.message });
     }
 };
 
-//@desc Reject a request
-//@route  Post /api/v1/requests/:id/reject
+
+//@desc   Reject a request
+//@route  Put /api/v1/requests/:id/reject
 //@access Private
 exports.rejectRequest = async (req, res, next) => {
     try {
@@ -248,3 +273,61 @@ exports.editRequest = async (req,res,next) => {
         return res.status(500).json({success: false, message: error.message});
     } 
 }
+
+//@desc     Edit request reason
+//@route    PATCH /api/v1/requests/:id/reason
+//@access   Private
+exports.editReason = async (req, res, next) => {
+    try {
+        const requestId = req.params.id;
+        const { reason } = req.body;
+
+        // // ตรวจสอบว่า reason เป็น string
+        if (typeof reason !== 'string') {
+            return res.status(400).json({ success: false, message: "Reason must be a string" });
+        }
+
+        // ตรวจสอบความยาวของ reason ไม่เกิน 250 ตัวอักษร
+        if (reason.length > 250) {
+            return res.status(400).json({ success: false, message: "Reason cannot be longer than 250 characters" });
+        }
+
+        // ตรวจสอบว่าผู้ใช้มีสิทธิ์หรือไม่
+        if (req.user.role !== 'admin') {
+            return res.status(401).json({ success: false, message: `User ${req.user.id} is not authorized to edit reason` });
+        }
+
+        // ✅ หา request มาก่อนเพื่อเช็ค status
+        const request = await Request.findById(requestId);
+
+        if (!request) {
+            return res.status(404).json({ success: false, message: `No request with id ${requestId}` });
+        }
+
+        // ✅ เช็คว่าต้องเป็น status = "reject" เท่านั้น
+        if (request.status !== 'rejected') {
+            return res.status(400).json({ success: false, message: `Cannot edit reason unless status is 'reject'` });
+        }
+
+        // ✅ อัปเดต reason เท่านั้น
+        const updatedRequest = await Request.findByIdAndUpdate(
+            requestId,
+            { $set: { reason: reason } },
+            {
+                new: true,
+                runValidators: false
+            }
+        );
+
+        res.status(200).json({
+            success: true,
+            data: updatedRequest
+        });
+
+    } catch (error) {
+        console.log(error.stack);
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+

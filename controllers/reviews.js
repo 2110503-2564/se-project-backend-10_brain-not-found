@@ -1,5 +1,5 @@
 const Reservation = require('../models/Reservation');
-const Shop = require('../models/Shop');
+const { Shop } = require('../models/Shop');
 const Review = require('../models/Review');
 
 //@desc     Get all review in this shop

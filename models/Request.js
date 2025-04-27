@@ -1,5 +1,7 @@
+// c:\vscode_test\softwareEng\se-project-backend-10_brain-not-found\models\Request.js
 const mongoose = require('mongoose');
-const Shop = require('./Shop')
+// Import เฉพาะ ShopSchema ที่ export ออกมาใหม่
+const { ShopSchema } = require('./Shop');
 
 const RequestSchema = new mongoose.Schema({
     user: {
@@ -12,7 +14,8 @@ const RequestSchema = new mongoose.Schema({
         default: Date.now
     },
     shop: {
-        type: Shop.schema,
+        // ตอนนี้ ShopSchema จะมีค่าที่ถูกต้องแล้ว
+        type: ShopSchema,
         required: true
     },
     status: {
@@ -27,7 +30,7 @@ const RequestSchema = new mongoose.Schema({
     },
     reason: {
         type: String,
-        maxlength: [250, 'Reason cannot be longer than 250 characters\n']
+        required: false
     },
     edited: {
         type: Date
