@@ -73,8 +73,83 @@ module.exports = router;
  *             properties:
  *               shop:
  *                 type: object
- *                 description: Shop details for the request.
- *                 example: { name: "My Shop", address: "123 Main St" }
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                     description: The name of the shop.
+ *                     example: "My Shop"
+ *                   address:
+ *                     type: string
+ *                     description: The address of the shop.
+ *                     example: "123 Main St"
+ *                   district:
+ *                     type: string
+ *                     description: The district where the shop is located.
+ *                     example: "Downtown"
+ *                   province:
+ *                     type: string
+ *                     description: The province where the shop is located.
+ *                     example: "Bangkok"
+ *                   postalcode:
+ *                     type: string
+ *                     description: The postal code of the shop.
+ *                     example: "10110"
+ *                   tel:
+ *                     type: string
+ *                     description: The phone number of the shop.
+ *                     example: "02-123-4567"
+ *                   region:
+ *                     type: string
+ *                     description: The region of the shop.
+ *                     example: "Central"
+ *                   openTime:
+ *                     type: string
+ *                     description: The opening time of the shop in HH:MM format.
+ *                     example: "09:00"
+ *                   closeTime:
+ *                     type: string
+ *                     description: The closing time of the shop in HH:MM format.
+ *                     example: "18:00"
+ *                   picture:
+ *                     type: array
+ *                     description: Array of picture URLs.
+ *                     items:
+ *                       type: string
+ *                     example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+ *                   desc:
+ *                     type: string
+ *                     description: A description of the shop.
+ *                     example: "A cozy massage shop offering relaxation and therapy services."
+ *                   shopType:
+ *                     type: string
+ *                     description: The type or category of the shop.
+ *                     example: "Massage"
+ *                   services:
+ *                     type: array
+ *                     description: List of services offered by the shop.
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           description: The service name.
+ *                           example: "Swedish Massage"
+ *                         desc:
+ *                           type: string
+ *                           description: A description of the service.
+ *                           example: "A relaxing full-body massage."
+ *                         duration:
+ *                           type: number
+ *                           description: Duration in minutes.
+ *                           example: 60
+ *                         price:
+ *                           type: number
+ *                           description: Price of the service.
+ *                           example: 50
+ *                   certificate:
+ *                     type: string
+ *                     description: Certificate of the shop.
+ *                     example: "Valid Health Certificate"
  *     responses:
  *       200:
  *         description: Successfully created a request.
@@ -97,7 +172,7 @@ module.exports = router;
 /**
  * @swagger
  * /api/v1/requests/{id}/approve:
- *   post:
+ *   put:
  *     summary: Approve a request
  *     description: Allows an admin to approve a request.
  *     tags:
@@ -138,7 +213,7 @@ module.exports = router;
 /**
  * @swagger
  * /api/v1/requests/{id}/reject:
- *   post:
+ *   put:
  *     summary: Reject a request
  *     description: Allows an admin to reject a request.
  *     tags:
@@ -226,7 +301,7 @@ module.exports = router;
  *         description: Internal server error.
  *   put:
  *     summary: Update a request
- *     description: Update the details of an existing request.
+ *     description: Update an existing request’s shop details. Note that fields "createdAt", "status", "reason", and "edited" cannot be updated.
  *     tags:
  *       - Requests
  *     security:
@@ -247,8 +322,83 @@ module.exports = router;
  *             properties:
  *               shop:
  *                 type: object
- *                 description: Updated shop details.
- *                 example: { name: "Updated Shop Name", address: "456 New St" }
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                     description: The updated name of the shop.
+ *                     example: "Updated Shop Name"
+ *                   address:
+ *                     type: string
+ *                     description: The updated address of the shop.
+ *                     example: "456 New St"
+ *                   district:
+ *                     type: string
+ *                     description: The updated district of the shop.
+ *                     example: "Downtown"
+ *                   province:
+ *                     type: string
+ *                     description: The updated province of the shop.
+ *                     example: "Bangkok"
+ *                   postalcode:
+ *                     type: string
+ *                     description: The updated postal code of the shop.
+ *                     example: "10110"
+ *                   tel:
+ *                     type: string
+ *                     description: The updated phone number of the shop.
+ *                     example: "02-123-4567"
+ *                   region:
+ *                     type: string
+ *                     description: The updated region of the shop.
+ *                     example: "Central"
+ *                   openTime:
+ *                     type: string
+ *                     description: The updated opening time in HH:MM format.
+ *                     example: "09:00"
+ *                   closeTime:
+ *                     type: string
+ *                     description: The updated closing time in HH:MM format.
+ *                     example: "18:00"
+ *                   picture:
+ *                     type: array
+ *                     description: Updated array of picture URLs.
+ *                     items:
+ *                       type: string
+ *                     example: ["https://example.com/updated1.jpg", "https://example.com/updated2.jpg"]
+ *                   desc:
+ *                     type: string
+ *                     description: The updated description of the shop.
+ *                     example: "Updated description of the shop"
+ *                   shopType:
+ *                     type: string
+ *                     description: The updated type or category of the shop.
+ *                     example: "Updated Shop Type"
+ *                   services:
+ *                     type: array
+ *                     description: Updated list of services offered by the shop.
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           description: The updated service name.
+ *                           example: "Updated Service Name"
+ *                         desc:
+ *                           type: string
+ *                           description: The updated description of the service.
+ *                           example: "Updated service description"
+ *                         duration:
+ *                           type: number
+ *                           description: The updated service duration in minutes.
+ *                           example: 60
+ *                         price:
+ *                           type: number
+ *                           description: The updated service price.
+ *                           example: 50
+ *                   certificate:
+ *                     type: string
+ *                     description: The updated certificate of the shop.
+ *                     example: "Updated Certificate"
  *     responses:
  *       200:
  *         description: Request successfully updated.
@@ -262,9 +412,9 @@ module.exports = router;
  *                   example: true
  *                 data:
  *                   $ref: '#/components/schemas/Request'
- *                   description: The updated request object
+ *                   description: The updated request object.
  *       400:
- *         description: Invalid request data.
+ *         description: Invalid request data (e.g. attempting to modify restricted fields).
  *       401:
  *         description: Unauthorized access.
  *       404:
@@ -302,4 +452,131 @@ module.exports = router;
  *         description: Request not found.
  *       500:
  *         description: Internal server error.
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Request:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier of the request.
+ *           example: "654321abcdef0123456789"
+ *         user:
+ *           type: string
+ *           description: The ID of the user who created the request.
+ *           example: "654321fedcba9876543210"
+ *         shop:
+ *           $ref: '#/components/schemas/Shop'
+ *         status:
+ *           type: string
+ *           enum: [pending, approved, rejected]
+ *           description: The status of the request.
+ *           example: "pending"
+ *         requestType:
+ *           type: string
+ *           enum: [create, update, delete]
+ *           description: The type of request action.
+ *           example: "create"
+ *         reason:
+ *           type: string
+ *           description: The reason for the request (if applicable).
+ *           example: "Request for new shop"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the request was created.
+ *           example: "2024-01-01T00:00:00.000Z"
+ *         edited:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the request was last updated.
+ *           example: "2024-01-02T12:00:00.000Z"
+ *
+ *     Shop:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier of the shop.
+ *           example: "654321abcdef0123456789"
+ *         name:
+ *           type: string
+ *           description: The name of the shop.
+ *           example: "My Shop"
+ *         address:
+ *           type: string
+ *           description: The address of the shop.
+ *           example: "123 Main St"
+ *         district:
+ *           type: string
+ *           description: The district where the shop is located.
+ *           example: "Downtown"
+ *         province:
+ *           type: string
+ *           description: The province where the shop is located.
+ *           example: "Bangkok"
+ *         postalcode:
+ *           type: string
+ *           description: The postal code of the shop.
+ *           example: "10110"
+ *         tel:
+ *           type: string
+ *           description: The phone number of the shop.
+ *           example: "02-123-4567"
+ *         region:
+ *           type: string
+ *           description: The region of the shop.
+ *           example: "Central"
+ *         openTime:
+ *           type: string
+ *           description: The opening time of the shop in HH:MM format.
+ *           example: "09:00"
+ *         closeTime:
+ *           type: string
+ *           description: The closing time of the shop in HH:MM format.
+ *           example: "18:00"
+ *         picture:
+ *           type: array
+ *           description: Array of picture URLs.
+ *           items:
+ *             type: string
+ *           example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+ *         desc:
+ *           type: string
+ *           description: A description of the shop.
+ *           example: "A cozy massage shop offering relaxation and therapy services."
+ *         shopType:
+ *           type: string
+ *           description: The type or category of the shop.
+ *           example: "Massage"
+ *         services:
+ *           type: array
+ *           description: List of services offered by the shop.
+ *           items:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The service name.
+ *                 example: "Swedish Massage"
+ *               desc:
+ *                 type: string
+ *                 description: A description of the service.
+ *                 example: "A relaxing full-body massage."
+ *               duration:
+ *                 type: number
+ *                 description: Duration in minutes.
+ *                 example: 60
+ *               price:
+ *                 type: number
+ *                 description: Price of the service.
+ *                 example: 50
+ *         certificate:
+ *           type: string
+ *           description: Certificate of the shop.
+ *           example: "Valid Health Certificate"
  */

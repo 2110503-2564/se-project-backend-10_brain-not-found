@@ -52,30 +52,19 @@ const swaggerOptions = {
                             example: '654321fedcba9876543210'
                         },
                         shop: {
-                            type: 'object',
-                            description: 'The shop details associated with the request.',
-                            properties: {
-                                name: {
-                                    type: 'string',
-                                    description: 'The name of the shop.',
-                                    example: 'My Shop'
-                                },
-                                address: {
-                                    type: 'string',
-                                    description: 'The address of the shop.',
-                                    example: '123 Main St'
-                                }
-                            }
+                            $ref: '#/components/schemas/Shop'
                         },
                         status: {
                             type: 'string',
-                            enum: [
-                                'pending',
-                                'approved',
-                                'rejected'
-                            ],
+                            enum: ['pending', 'approved', 'rejected'],
                             description: 'The status of the request.',
                             example: 'pending'
+                        },
+                        requestType: {
+                            type: 'string',
+                            enum: ['create', 'update', 'delete'],
+                            description: 'The type of request action.',
+                            example: 'create'
                         },
                         reason: {
                             type: 'string',
@@ -87,6 +76,12 @@ const swaggerOptions = {
                             format: 'date-time',
                             description: 'The timestamp when the request was created.',
                             example: '2024-01-01T00:00:00.000Z'
+                        },
+                        edited: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'The timestamp when the request was last updated.',
+                            example: '2024-01-02T12:00:00.000Z'
                         }
                     }
                 },
@@ -108,16 +103,90 @@ const swaggerOptions = {
                             description: 'The address of the shop.',
                             example: '123 Main St'
                         },
-                        owner: {
+                        district: {
                             type: 'string',
-                            description: 'The ID of the shop owner.',
-                            example: '654321fedcba9876543210'
+                            description: 'The district where the shop is located.',
+                            example: 'Downtown'
                         },
-                        createdAt: {
+                        province: {
                             type: 'string',
-                            format: 'date-time',
-                            description: 'The timestamp when the shop was created.',
-                            example: '2024-01-01T00:00:00.000Z'
+                            description: 'The province where the shop is located.',
+                            example: 'Bangkok'
+                        },
+                        postalcode: {
+                            type: 'string',
+                            description: 'The postal code of the shop.',
+                            example: '10110'
+                        },
+                        tel: {
+                            type: 'string',
+                            description: 'The phone number of the shop.',
+                            example: '02-123-4567'
+                        },
+                        region: {
+                            type: 'string',
+                            description: 'The region of the shop.',
+                            example: 'Central'
+                        },
+                        openTime: {
+                            type: 'string',
+                            description: 'The opening time of the shop in HH:MM format.',
+                            example: '09:00'
+                        },
+                        closeTime: {
+                            type: 'string',
+                            description: 'The closing time of the shop in HH:MM format.',
+                            example: '18:00'
+                        },
+                        picture: {
+                            type: 'array',
+                            description: 'Array of picture URLs.',
+                            items: { type: 'string' },
+                            example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+                        },
+                        desc: {
+                            type: 'string',
+                            description: 'A description of the shop.',
+                            example: "A cozy massage shop offering relaxation and therapy services."
+                        },
+                        shopType: {
+                            type: 'string',
+                            description: 'The type or category of the shop.',
+                            example: 'Massage'
+                        },
+                        services: {
+                            type: 'array',
+                            description: 'List of services offered by the shop.',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    name: {
+                                        type: 'string',
+                                        description: 'The service name.',
+                            example: 'Swedish Massage'
+                                    },
+                                    desc: {
+                                        type: 'string',
+                                        description: 'A description of the service.',
+                                        example: 'A relaxing full-body massage.'
+                        },
+                        duration: {
+                                        type: 'number',
+                                        description: 'Duration in minutes.',
+                                        example: 60
+                                    },
+                                    price: {
+                                        type: 'number',
+                                        description: 'Price of the service.',
+                                        example: 50
+                                    }
+                                }
+                            }
+                        },
+                        certificate: {
+                            type: 'string',
+                                                        description: 'Certificate of the shop.',
+                            example: "Valid Health Certificate"
                         }
                     }
                 }
@@ -135,9 +204,7 @@ const swaggerOptions = {
             bearerAuth: []
         }]
     },
-    apis: [
-        './routes/*.js'
-    ]
+    apis: ['./routes/*.js']
 };
 const swaggerDocs=swaggerJsDoc(swaggerOptions);
 app.use('/api-docs',swaggerUI.serve, swaggerUI.setup(swaggerDocs));
