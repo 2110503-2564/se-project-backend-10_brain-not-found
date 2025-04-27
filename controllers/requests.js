@@ -109,41 +109,58 @@ exports.getRequest = async (req, res, next) => {
     }
 }
 
-//@desc   Approve a request and create a shop
-//@route  Put /api/v1/requests/:id/approve
-//@access Private
 exports.approveRequest = async (req, res, next) => {
     const session = await mongoose.startSession();
-
     try {
-        const request = await Request.findById(req.params.id);
+        session.startTransaction(); // <--- แก้ไขเป็น startTransaction()
+
+        const request = await Request.findById(req.params.id).session(session); // ควรใช้ .session() ในการ query ด้วย
         if (req.user.role !== 'admin') {
+            await session.abortTransaction(); // Abort ก่อน return
+            session.endSession();
             return res.status(403).json({ success: false, message: 'Unauthorized' });
         }
-        
-        if (!request) return res.status(404).json({ success: false, message: 'Request not found' });
+
+        if (!request) {
+            await session.abortTransaction(); // Abort ก่อน return
+            session.endSession();
+            return res.status(404).json({ success: false, message: 'Request not found' });
+        }
 
         if (request.status !== 'pending') {
+            await session.abortTransaction(); // Abort ก่อน return
+            session.endSession();
             return res.status(400).json({ success: false, message: `Request already ${request.status}` });
         }
-        
-        // Create a new shop
-        const shop = await Shop.create([request.shop], { session }); // ต้องใส่เป็น array เมื่อใช้ session
 
-        // Update request status
+        // Create a new shop using the session
+        // ใช้ request.shop โดยตรง ไม่ต้องใส่ใน array ถ้า schema ถูกต้อง
+        const shopData = request.shop.toObject ? request.shop.toObject() : request.shop; // แปลงเป็น plain object ก่อน
+        delete shopData._id; // ลบ _id เดิมทิ้ง (ถ้ามี) เพื่อให้ MongoDB สร้างใหม่
+        const createdShops = await Shop.create([shopData], { session }); // ใช้ create กับ session
+
+        // Update request status using the session
         request.status = 'approved';
         await request.save({ session });
 
+        // Commit the transaction
         await session.commitTransaction();
         session.endSession();
 
-        res.status(200).json({ success: true, message: 'Request approved, shop created', data: shop });
+        res.status(200).json({ success: true, message: 'Request approved, shop created', data: createdShops[0] }); // ส่ง shop ที่สร้างกลับไป
+
     } catch (err) {
-        await session.abortTransaction();
+        // If an error occurred, abort the whole transaction
+        // ตรวจสอบก่อนว่า transaction เริ่มหรือยังก่อน abort (เผื่อ error เกิดก่อน startTransaction)
+        if (session.inTransaction()) {
+             await session.abortTransaction();
+        }
         session.endSession();
+        console.error("Transaction Error:", err); // Log error เพื่อ debug
         res.status(500).json({ success: false, error: err.message });
     }
 };
+
 
 //@desc   Reject a request
 //@route  Put /api/v1/requests/:id/reject
