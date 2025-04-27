@@ -1,6 +1,6 @@
 const Request = require('../models/Request');
 const User = require('../models/User');
-const Shop = require('../models/Shop');
+const { Shop }= require('../models/Shop');
 const mongoose = require('mongoose');
 
 // @desc     Create request
