@@ -2,7 +2,7 @@
 jest.mock('../models/Request');
 jest.mock('../models/User');
 
-const { createRequest } = require('../controllers/requests');
+const { createRequest } = require('../controllers/api_testing');
 const Request = require('../models/Request');
 
 // Test suite for createRequest function
