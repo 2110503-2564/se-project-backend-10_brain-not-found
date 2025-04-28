@@ -4,3 +4,5 @@ node_modules/*
 #config/config.env
 
 .DS_Store
+# ignore coverage folder to prevent changes
+coverage/*
