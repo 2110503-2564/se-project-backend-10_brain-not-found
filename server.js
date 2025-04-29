@@ -85,6 +85,68 @@ const swaggerOptions = {
                         }
                     }
                 },
+                Review: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                            description: 'The unique identifier of the review.',
+                            example: '61e0f1f77e12f3b4a9f6d8b2'
+                        },
+                        header: {
+                            type: 'string',
+                            description: 'The title or header of the review.',
+                            maxLength: 50,
+                            example: 'Excellent Service!'
+                        },
+                        comment: {
+                            type: 'string',
+                            description: 'The main content of the review.',
+                            maxLength: 250,
+                            example: 'The massage was very relaxing and the staff were friendly.'
+                        },
+                        rating: {
+                            type: 'number',
+                            format: 'integer',
+                            description: 'Rating from 1 to 5.',
+                            minimum: 1,
+                            maximum: 5,
+                            example: 5
+                        },
+                        shop: {
+                            type: 'string',
+                            description: 'The ID of the shop being reviewed.',
+                            example: '60d5f1f77e12f3b4a9f6d8a1'
+                        },
+                        user: {
+                            // Could be just string ID or object if populated
+                            type: 'object',
+                            properties: {
+                                _id: {
+                                    type: 'string',
+                                    example: '60c7a3f77e12f3b4a9f6d8c3'
+                                },
+                                name: {
+                                    type: 'string',
+                                    example: 'John Doe'
+                                }
+                            },
+                            description: 'The user who wrote the review (populated with name).'
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'The timestamp when the review was created.',
+                            example: '2024-03-15T10:30:00.000Z'
+                        },
+                        edited: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'The timestamp when the review was last edited.',
+                            example: '2024-03-16T11:00:00.000Z'
+                        }
+                    }
+                },
                 Shop: {
                     type: 'object',
                     properties: {
