@@ -1,4 +1,4 @@
-const { getRequests } = require('../controllers/requests');
+const { getRequests } = require('../controllers/api_testing');
 const Request = require('../models/Request');
 
 jest.mock('../models/Request', () => ({
@@ -120,5 +120,17 @@ describe('getRequests controller', () => {
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({ success: false, message: 'Test error' });
+    });
+
+    test('should handle unauthorized access', async () => {
+        req = {
+            user: { role: 'user', id: 'unknown-id' },
+            query: {}
+        };
+
+        await getRequests(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(401);
+        expect(res.json).toHaveBeenCalledWith({ success: false, message: `User ${req.user.id} is not authorized to get requests` });
     });
 });
