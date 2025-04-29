@@ -1,5 +1,5 @@
 const Reservation = require('../models/Reservation');
-const Shop = require('../models/Shop');
+const { Shop } = require('../models/Shop');
 const moment = require('moment');
 //@desc     Get all reservations
 //@route    Get /api/v1/reservations

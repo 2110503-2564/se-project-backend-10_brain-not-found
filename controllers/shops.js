@@ -1,4 +1,4 @@
-const Shop = require('../models/Shop.js')
+const { Shop } = require('../models/Shop.js')
 const Reservation = require('../models/Reservation.js')
 //@desc Get all shops
 //@route GET /api/v1/shops
